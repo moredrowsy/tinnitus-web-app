@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -10,4 +14,32 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/*
+  See this link for how to overflow only app div and not navbar
+  https://stackoverflow.com/questions/68293303/how-do-i-make-scrollbar-only-at-div-content-and-not-at-entire-body/
+*/
+/* Html and body @ height 100% will not overflow body */
+html,
+body {
+  height: 100%;
+}
+
+/* 
+  Set root div as flex container in colum dir so it aligns to parent height
+*/
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/*
+  Set app div with overflow auto will only overflow this element.
+  Element before app will not overflow.
+ */
+#app {
+  overflow: auto;
+  height: 100%;
 }
