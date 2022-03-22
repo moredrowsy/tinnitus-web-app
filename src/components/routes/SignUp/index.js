@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../../../store/firebase';
+
+import { auth, db } from '../../../store/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 
 import { LockClosedIcon } from '@heroicons/react/solid';
 import EarLogo from '../../../assets/images/ear-logo.svg';
@@ -14,7 +16,17 @@ function SignUp() {
 
   const signUp = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      await setDoc(doc(db, 'users', user.uid), {
+        displayName: user.email,
+      });
+
       setErrMsg(null);
       navigate('/');
     } catch (err) {

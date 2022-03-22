@@ -13,3 +13,11 @@ npm install
 ```bash
 npm run
 ```
+
+## Setup
+
+### CORS settings for Firebase storage
+
+```bash
+gsutil cors set cors.json gs://<your-cloud-storage-bucket>
+```
