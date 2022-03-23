@@ -6,6 +6,7 @@ import {
   arrayUnion,
   collection,
   doc,
+  setDoc,
   updateDoc,
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
@@ -105,6 +106,9 @@ function Upload({ user }) {
         await updateDoc(doc(db, 'users', user.uid), {
           sounds: arrayUnion(docRef.id),
         });
+
+        const postRef = doc(db, 'users', user.uid, 'votes', docRef.id);
+        setDoc(postRef, { count: 1 });
 
         // update file on client to 'uploaded' status
         files[filename] = { ...file, status: 'uploaded' };

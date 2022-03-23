@@ -14,10 +14,18 @@ import {
   addSoundFileAsync,
   selectSoundFiles,
 } from '../store/redux/slices/soundFiles';
+import {
+  fetchUsernamesAsync,
+  selectUsernames,
+} from '../store/redux/slices/usernames';
 
 import './App.css';
 import { Home, Mixes, Posts, SignIn, SignUp, Sounds, Upload } from './routes';
 import Navbar from './Navbar';
+import {
+  fetchUserVotesAsync,
+  selectUserVotes,
+} from '../store/redux/slices/userVotes';
 
 const navigation = [
   { name: 'Dashboard', path: '/', exact: true },
@@ -32,10 +40,18 @@ function App() {
   const soundFiles = useSelector(selectSoundFiles);
   const dispatch = useDispatch();
   const soundMetadas = useSelector(selectMetadata);
+  const usernames = useSelector(selectUsernames);
+  const userVotes = useSelector(selectUserVotes);
 
   useEffect(() => {
     dispatch(updateSoundMetadatasAsync());
+    dispatch(fetchUsernamesAsync());
   }, [dispatch]);
+
+  useEffect(() => {
+    const userId = user ? user.uid : null;
+    dispatch(fetchUserVotesAsync({ userId }));
+  }, [dispatch, user]);
 
   const toggleSoundFile = async ({ id, storageKey }) => {
     // Check if there is a howl file
@@ -84,6 +100,9 @@ function App() {
                 <Sounds
                   soundMetadas={soundMetadas}
                   toggleSoundFile={toggleSoundFile}
+                  userId={user ? user.uid : null}
+                  usernames={usernames}
+                  userVotes={userVotes}
                 />
               }
             />
@@ -91,10 +110,12 @@ function App() {
               path='/sounds/:collectionId'
               element={
                 <Posts
-                  userId={user ? user.uid : null}
+                  path='sounds'
                   soundMetadas={soundMetadas}
                   toggleSoundFile={toggleSoundFile}
-                  path='sounds'
+                  userId={user ? user.uid : null}
+                  usernames={usernames}
+                  userVotes={userVotes}
                 />
               }
             />

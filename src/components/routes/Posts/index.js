@@ -9,7 +9,14 @@ import {
 
 import Sound from '../Sound';
 
-function Posts({ path, soundMetadas, toggleSoundFile, userId }) {
+function Posts({
+  path,
+  soundMetadas,
+  toggleSoundFile,
+  userId,
+  usernames,
+  userVotes,
+}) {
   const [body, setBody] = useState('');
   const { collectionId } = useParams();
   const postCollections = useSelector(selectPostCollections);
@@ -17,7 +24,9 @@ function Posts({ path, soundMetadas, toggleSoundFile, userId }) {
   const soundMetadata = soundMetadas[collectionId];
   const dispatch = useDispatch();
 
-  console.log({ soundMetadata });
+  //   useEffect(() => {
+  //     dispatch(addVoteAsync({ userId, postId: collectionId }));
+  //   }, [dispatch, collectionId, userId]);
 
   const addPost = () => {
     if (body) {
@@ -38,7 +47,13 @@ function Posts({ path, soundMetadas, toggleSoundFile, userId }) {
 
   return (
     <div>
-      <Sound soundMetadata={soundMetadata} toggleSoundFile={toggleSoundFile} />
+      <Sound
+        soundMetadata={soundMetadata}
+        toggleSoundFile={toggleSoundFile}
+        userId={userId}
+        usernames={usernames}
+        userVotes={userVotes}
+      />
       <form onSubmit={onSubmit} className='m-10'>
         <div className='flex flex-col gap-4 items-center'>
           <textarea

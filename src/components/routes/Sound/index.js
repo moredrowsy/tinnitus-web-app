@@ -6,10 +6,47 @@ import {
   PlayIcon,
 } from '@heroicons/react/outline';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { getUsernameByIdAsync } from '../../../store/redux/slices/usernames';
+import {
+  decrementVoteAynsc,
+  incrementVoteAynsc,
+} from '../../../store/redux/slices/soundMetadatas';
 
-function Sound({ soundMetadata, toggleSoundFile }) {
+function Sound({
+  soundMetadata,
+  toggleSoundFile,
+  userId,
+  usernames,
+  userVotes,
+}) {
+  const dispatch = useDispatch();
+
+  // Exit if not metadata
+  if (!soundMetadata) return null;
+
+  // Check for usersname display
+  const username = usernames[soundMetadata.authorId];
+  if (username === undefined) {
+    dispatch(getUsernameByIdAsync({ id: soundMetadata.authorId }));
+  }
+
+  // Check for vote status
+  let voteCount = 0;
+  if (soundMetadata.id in userVotes) {
+    voteCount = Number(userVotes[soundMetadata.id].count);
+  }
+
+  const incrementVote = () => {
+    dispatch(incrementVoteAynsc({ userId, postId: soundMetadata.id }));
+  };
+
+  const decrementVote = () => {
+    dispatch(decrementVoteAynsc({ userId, postId: soundMetadata.id }));
+  };
+
+  // Logic for sound button
   let soundButton;
-
   switch (soundMetadata.status) {
     case 'playing':
       soundButton = (
@@ -81,39 +118,44 @@ function Sound({ soundMetadata, toggleSoundFile }) {
           <div className='flex justify-start items-center font-bold text-xl mb-2 bg-gray-700 p-2 text-white'>
             <div className='flex-none flex flex-col justify-center items-start'>
               <ChevronUpIcon
-                className='h-5 w-7 text-red-400 cursor-pointer'
+                className={`h-5 w-7 ${
+                  voteCount > 0 ? 'text-red-400' : 'text-gray-400'
+                } ${userId && voteCount <= 0 ? 'cursor-pointer' : ''}`}
                 aria-hidden='true'
-                onClick={() =>
-                  toggleSoundFile({
-                    id: soundMetadata.id,
-                    storageKey: soundMetadata.storagePath,
-                  })
+                onClick={
+                  voteCount > 0 || userId === undefined || userId === null
+                    ? null
+                    : incrementVote
                 }
               />
-              <div className='-mt-2 -mb-2 h-7 w-7 font-bold text-xl text-white rounded-full flex items-center justify-center font-mono'>
+              <div
+                className={`-mt-2 -mb-2 h-7 w-7 font-bold text-xl rounded-full flex items-center justify-center font-mono ${
+                  voteCount === 0 ? 'text-white' : 'text-red-400'
+                }`}
+              >
                 {soundMetadata.votes || 0}
               </div>
               <ChevronDownIcon
-                className='h-5 w-7 text-gray-400 cursor-pointer'
+                className={`h-5 w-7 ${
+                  voteCount < 0 ? 'text-red-400' : 'text-gray-400'
+                } ${userId && voteCount >= 0 ? 'cursor-pointer' : ''}`}
                 aria-hidden='true'
-                onClick={() =>
-                  toggleSoundFile({
-                    id: soundMetadata.id,
-                    storageKey: soundMetadata.storagePath,
-                  })
+                onClick={
+                  voteCount < 0 || userId === undefined || userId === null
+                    ? null
+                    : decrementVote
                 }
               />
             </div>
             <div className='flex-1 text-left'>{soundMetadata.title}</div>
+            <div className='flex-1 text-right text-xs'>{username || ''}</div>
           </div>
-          <div className='px-6 py-4'>
-            <div className='flex justify-center items-center'>
-              <div className='flex-1 flex justify-center items-center'>
-                {soundButton}
-              </div>
+          <div className='flex justify-center items-center'>
+            <div className='flex-1 flex justify-center items-center'>
+              {soundButton}
             </div>
           </div>
-          <div className='px-6 pt-4 pb-2'>
+          <div className='flex justify-center px-6 pt-4 pb-2'>
             <Link
               to={`/sounds/${soundMetadata.id}`}
               className='inline-block bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-white hover:bg-gray-200 hover:text-gray-700 underline mr-2 mb-2'
