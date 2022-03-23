@@ -1,23 +1,17 @@
 import React from 'react';
 import Sound from '../Sound';
 
-function Sounds({
-  soundMetadas,
-  toggleSoundFile,
-  userId,
-  usernames,
-  userVotes,
-}) {
-  const soundMetadasArray = Object.keys(soundMetadas)
-    .map((key) => soundMetadas[key])
+function Sounds({ sounds, toggleSoundFile, userId, usernames, userVotes }) {
+  const soundsArray = Object.keys(sounds)
+    .map((key) => sounds[key])
     .sort((a, b) => b.votes - a.votes);
 
   return (
     <div className='m-5'>
-      {soundMetadasArray.map((soundMetadata) => (
+      {soundsArray.map((sound) => (
         <Sound
-          key={soundMetadata.id}
-          soundMetadata={soundMetadata}
+          key={sound.id}
+          sound={sound}
           toggleSoundFile={toggleSoundFile}
           userId={userId}
           usernames={usernames}

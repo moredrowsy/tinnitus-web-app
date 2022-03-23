@@ -11,52 +11,46 @@ import { getUsernameByIdAsync } from '../../../store/redux/slices/usernames';
 import {
   decrementVoteAynsc,
   incrementVoteAynsc,
-} from '../../../store/redux/slices/soundMetadatas';
+} from '../../../store/redux/slices/sounds';
 
-function Sound({
-  soundMetadata,
-  toggleSoundFile,
-  userId,
-  usernames,
-  userVotes,
-}) {
+function Sound({ sound, toggleSoundFile, userId, usernames, userVotes }) {
   const dispatch = useDispatch();
 
-  // Exit if not metadata
-  if (!soundMetadata) return null;
+  // Exit if no sound
+  if (!sound) return null;
 
   // Check for usersname display
-  const username = usernames[soundMetadata.authorId];
+  const username = usernames[sound.authorId];
   if (username === undefined) {
-    dispatch(getUsernameByIdAsync({ id: soundMetadata.authorId }));
+    dispatch(getUsernameByIdAsync({ id: sound.authorId }));
   }
 
   // Check for vote status
   let voteCount = 0;
-  if (soundMetadata.id in userVotes) {
-    voteCount = Number(userVotes[soundMetadata.id].count);
+  if (sound.id in userVotes) {
+    voteCount = Number(userVotes[sound.id].count);
   }
 
   const incrementVote = () => {
-    dispatch(incrementVoteAynsc({ userId, postId: soundMetadata.id }));
+    dispatch(incrementVoteAynsc({ userId, postId: sound.id }));
   };
 
   const decrementVote = () => {
-    dispatch(decrementVoteAynsc({ userId, postId: soundMetadata.id }));
+    dispatch(decrementVoteAynsc({ userId, postId: sound.id }));
   };
 
   // Logic for sound button
   let soundButton;
-  switch (soundMetadata.status) {
+  switch (sound.status) {
     case 'playing':
       soundButton = (
         <PauseIcon
-          className='h-10 w-10 text-gray-400 cursor-pointer'
+          className='h-10 w-10 text-orange-400 cursor-pointer animate-pulse'
           aria-hidden='true'
           onClick={() =>
             toggleSoundFile({
-              id: soundMetadata.id,
-              storageKey: soundMetadata.storagePath,
+              id: sound.id,
+              storageKey: sound.storagePath,
             })
           }
         />
@@ -89,8 +83,8 @@ function Sound({
           aria-hidden='true'
           onClick={() =>
             toggleSoundFile({
-              id: soundMetadata.id,
-              storageKey: soundMetadata.storagePath,
+              id: sound.id,
+              storageKey: sound.storagePath,
             })
           }
         />
@@ -103,8 +97,8 @@ function Sound({
           aria-hidden='true'
           onClick={() =>
             toggleSoundFile({
-              id: soundMetadata.id,
-              storageKey: soundMetadata.storagePath,
+              id: sound.id,
+              storageKey: sound.storagePath,
             })
           }
         />
@@ -112,7 +106,7 @@ function Sound({
   }
 
   return (
-    <div className='flex' key={soundMetadata.id}>
+    <div className='flex' key={sound.id}>
       <div className='flex-1 justify-center items-center mb-5 bg-white'>
         <div className='rounded overflow-hidden shadow-lg'>
           <div className='flex justify-start items-center font-bold text-xl bg-gray-700 pl-1 pr-1 text-white'>
@@ -133,7 +127,7 @@ function Sound({
                   voteCount === 0 ? 'text-white' : 'text-red-400'
                 }`}
               >
-                {soundMetadata.votes || 0}
+                {sound.votes || 0}
               </div>
               <ChevronDownIcon
                 className={`h-5 w-7 ${
@@ -147,9 +141,7 @@ function Sound({
                 }
               />
             </div>
-            <div className='flex-1 text-left text-base'>
-              {soundMetadata.title}
-            </div>
+            <div className='flex-1 text-left text-base'>{sound.title}</div>
             <div className='flex-1 text-right text-xs'>{username || ''}</div>
           </div>
           <div className='flex justify-center items-center'>
@@ -159,14 +151,14 @@ function Sound({
           </div>
           <div className='flex justify-center mt-2'>
             <Link
-              to={`/sounds/${soundMetadata.id}`}
+              to={`/sounds/${sound.id}`}
               className='inline-block bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-white hover:bg-gray-200 hover:text-gray-700 underline mr-2 mb-2'
             >
               Comments
             </Link>
           </div>
           <div className='px-5 pb-2'>
-            {soundMetadata.tags.map((tag) => (
+            {sound.tags.map((tag) => (
               <span
                 key={tag}
                 className='inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2'

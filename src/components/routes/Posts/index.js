@@ -12,7 +12,7 @@ import Sound from '../Sound';
 
 function Posts({
   path,
-  soundMetadas,
+  sounds,
   toggleSoundFile,
   userId,
   usernames,
@@ -22,7 +22,7 @@ function Posts({
   const { collectionId } = useParams();
   const postCollections = useSelector(selectPostCollections);
   const posts = postCollections[collectionId];
-  const soundMetadata = soundMetadas[collectionId];
+  const sound = sounds[collectionId];
   const dispatch = useDispatch();
 
   const addPost = () => {
@@ -45,7 +45,7 @@ function Posts({
   return (
     <div className='m-5'>
       <Sound
-        soundMetadata={soundMetadata}
+        sound={sound}
         toggleSoundFile={toggleSoundFile}
         userId={userId}
         usernames={usernames}

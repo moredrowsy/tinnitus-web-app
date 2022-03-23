@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getStorageFile } from '../../firebase/helpers';
-import { updateSoundMetadataStatus } from '../slices/soundMetadatas';
+import { updateSoundStatus } from '../slices/sounds';
 
 const sliceKey = 'soundFiles';
 const initialState = {};
@@ -30,14 +30,14 @@ export const selectSoundFiles = (state) => state[sliceKey];
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
-export const addSoundFileAsync =
+export const getSoundFileAsync =
   ({ id, storageKey, onSuccess, onError }) =>
   async (dispatch, getState) => {
     try {
-      dispatch(updateSoundMetadataStatus({ id, status: 'downloading' }));
+      dispatch(updateSoundStatus({ id, status: 'downloading' }));
       const dataURL = await getStorageFile(storageKey);
       dispatch(addSoundFile(storageKey, dataURL));
-      dispatch(updateSoundMetadataStatus({ id, status: 'complete' }));
+      dispatch(updateSoundStatus({ id, status: 'complete' }));
 
       if (onSuccess) onSuccess(dataURL);
     } catch (err) {

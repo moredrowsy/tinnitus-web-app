@@ -12,7 +12,7 @@ import {
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { audioTrim } from '../../../utils';
-import { addSoundMetadatas } from '../../../store/redux/slices/soundMetadatas';
+import { addSound } from '../../../store/redux/slices/sounds';
 import { updateUserVote } from '../../../store/redux/slices/userVotes';
 import { blobToDataURL } from '../../../utils';
 
@@ -102,8 +102,8 @@ function Upload({ addHowl, user }) {
         const dataURL = await blobToDataURL(file.data);
         addHowl({ storageKey: storagePath, dataURL });
 
-        // add sounds metadata to firebase database;
-        const soundMetadata = {
+        // add sounds to firebase database;
+        const sound = {
           authorId: user.uid,
           title: file.title,
           filename: filename,
@@ -112,9 +112,9 @@ function Upload({ addHowl, user }) {
           tags: Array.from(files[filename].tags),
           votes: 1,
         };
-        const docRef = await addDoc(collection(db, 'sounds'), soundMetadata);
-        soundMetadata.id = docRef.id;
-        dispatch(addSoundMetadatas({ soundMetadata }));
+        const docRef = await addDoc(collection(db, 'sounds'), sound);
+        sound.id = docRef.id;
+        dispatch(addSound({ sound }));
 
         // update user's sound array to firebase database
         await updateDoc(doc(db, 'users', user.uid), {
@@ -173,7 +173,7 @@ function Upload({ addHowl, user }) {
         onDragLeave={(e) => handleDragLeave(e)}
       >
         <label className='block m-5 text-md text-center font-medium text-gray-700'>
-          Upload audio file
+          Upload audio files
         </label>
         <div className='mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md'>
           <div className='space-y-1 text-center'>

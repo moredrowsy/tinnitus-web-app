@@ -6,12 +6,12 @@ import { auth } from '../store/firebase';
 import { Howl } from 'howler';
 
 import {
-  selectMetadata,
-  updateSoundMetadatasAsync,
-  updateSoundMetadataStatus,
-} from '../store/redux/slices/soundMetadatas';
+  selectSounds,
+  updateSoundsAsync,
+  updateSoundStatus,
+} from '../store/redux/slices/sounds';
 import {
-  addSoundFileAsync,
+  getSoundFileAsync,
   selectSoundFiles,
 } from '../store/redux/slices/soundFiles';
 import {
@@ -39,12 +39,12 @@ function App() {
   const [howlStorage, setHowlStorage] = useState({});
   const soundFiles = useSelector(selectSoundFiles);
   const dispatch = useDispatch();
-  const soundMetadas = useSelector(selectMetadata);
+  const sounds = useSelector(selectSounds);
   const usernames = useSelector(selectUsernames);
   const userVotes = useSelector(selectUserVotes);
 
   useEffect(() => {
-    dispatch(updateSoundMetadatasAsync());
+    dispatch(updateSoundsAsync());
     dispatch(fetchUsernamesAsync());
   }, [dispatch]);
 
@@ -71,11 +71,11 @@ function App() {
       if (play) {
         howl.stop();
         howlStorage[storageKey].play = false;
-        dispatch(updateSoundMetadataStatus({ id, status: 'stopped' }));
+        dispatch(updateSoundStatus({ id, status: 'stopped' }));
       } else {
         howl.play();
         howlStorage[storageKey].play = true;
-        dispatch(updateSoundMetadataStatus({ id, status: 'playing' }));
+        dispatch(updateSoundStatus({ id, status: 'playing' }));
       }
       setHowlStorage({ ...howlStorage });
     }
@@ -88,9 +88,9 @@ function App() {
         });
         howl.play();
         setHowlStorage({ ...howlStorage, [storageKey]: { howl, play: true } });
-        dispatch(updateSoundMetadataStatus({ id, status: 'playing' }));
+        dispatch(updateSoundStatus({ id, status: 'playing' }));
       };
-      dispatch(addSoundFileAsync({ id, storageKey, onSuccess }));
+      dispatch(getSoundFileAsync({ id, storageKey, onSuccess }));
     }
   };
 
@@ -108,7 +108,7 @@ function App() {
               path='/sounds'
               element={
                 <Sounds
-                  soundMetadas={soundMetadas}
+                  sounds={sounds}
                   toggleSoundFile={toggleSoundFile}
                   userId={user ? user.uid : null}
                   usernames={usernames}
@@ -121,7 +121,7 @@ function App() {
               element={
                 <Posts
                   path='sounds'
-                  soundMetadas={soundMetadas}
+                  sounds={sounds}
                   toggleSoundFile={toggleSoundFile}
                   userId={user ? user.uid : null}
                   usernames={usernames}

@@ -10,26 +10,26 @@ import {
 } from 'firebase/firestore';
 import { updateUserVote } from './userVotes';
 
-const sliceKey = 'soundMetadatas';
+const sliceKey = 'sounds';
 const initialState = {};
 
-export const soundMetadatasSlice = createSlice({
+export const soundsSlice = createSlice({
   name: sliceKey,
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
     // Use the PayloadAction type to declare the contents of `action.payload`
-    addSoundMetadatas: (state, action) => {
-      const { soundMetadata } = action.payload;
-      const { id } = soundMetadata;
-      state[id] = soundMetadata;
+    addSound: (state, action) => {
+      const { sound } = action.payload;
+      const { id } = sound;
+      state[id] = sound;
       return state;
     },
-    updateSoundMetadatas: (state, action) => {
+    updateSounds: (state, action) => {
       state = { ...state, ...action.payload };
       return state;
     },
-    updateSoundMetadataStatus: (state, action) => {
+    updateSoundStatus: (state, action) => {
       const { id, status } = action.payload;
       state[id] = {
         ...state[id],
@@ -37,7 +37,7 @@ export const soundMetadatasSlice = createSlice({
       };
       return state;
     },
-    incrementSoundMetadataVote: (state, action) => {
+    incrementSoundVote: (state, action) => {
       const { id } = action.payload;
       state[id] = {
         ...state[id],
@@ -45,7 +45,7 @@ export const soundMetadatasSlice = createSlice({
       };
       return state;
     },
-    decrementSoundMetadataVote: (state, action) => {
+    decrementSoundVote: (state, action) => {
       const { id } = action.payload;
       state[id] = {
         ...state[id],
@@ -57,21 +57,21 @@ export const soundMetadatasSlice = createSlice({
 });
 
 export const {
-  addSoundMetadatas,
-  decrementSoundMetadataVote,
-  incrementSoundMetadataVote,
-  updateSoundMetadatas,
-  updateSoundMetadataStatus,
-} = soundMetadatasSlice.actions;
+  addSound,
+  decrementSoundVote,
+  incrementSoundVote,
+  updateSounds,
+  updateSoundStatus,
+} = soundsSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-export const selectMetadata = (state) => state[sliceKey];
+export const selectSounds = (state) => state[sliceKey];
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
-export const updateSoundMetadatasAsync = () => async (dispatch, getState) => {
+export const updateSoundsAsync = () => async (dispatch, getState) => {
   const querySnapshot = await getDocs(collection(db, 'sounds'));
 
   // Serialize snapshot documents to json object for redux
@@ -93,10 +93,10 @@ export const updateSoundMetadatasAsync = () => async (dispatch, getState) => {
     };
   });
 
-  dispatch(updateSoundMetadatas(temp));
+  dispatch(updateSounds(temp));
 };
 
-export const incrementSoundMetadataVoteAsync =
+export const incrementSoundVoteAsync =
   ({ id, onSuccess, onError }) =>
   async (dispatch, getState) => {
     try {
@@ -104,7 +104,7 @@ export const incrementSoundMetadataVoteAsync =
       updateDoc(soundRef, {
         votes: increment(1),
       });
-      dispatch(incrementSoundMetadataVote({ id }));
+      dispatch(incrementSoundVote({ id }));
       if (onSuccess) onSuccess();
     } catch (err) {
       if (onError) onError(err);
@@ -112,7 +112,7 @@ export const incrementSoundMetadataVoteAsync =
     }
   };
 
-export const decrementSoundMetadataVoteAsync =
+export const decrementSoundVoteAsync =
   ({ id, onSuccess, onError }) =>
   async (dispatch, getState) => {
     try {
@@ -120,7 +120,7 @@ export const decrementSoundMetadataVoteAsync =
       updateDoc(soundRef, {
         votes: increment(-1),
       });
-      dispatch(decrementSoundMetadataVote({ id }));
+      dispatch(decrementSoundVote({ id }));
       if (onSuccess) onSuccess();
     } catch (err) {
       if (onError) onError(err);
@@ -136,7 +136,7 @@ export const addVoteAsync =
         const postRef = doc(db, 'users', userId, 'votes', postId);
         setDoc(postRef, { count: 1 });
         dispatch(updateUserVote({ postId, voteInfo: { count: 1 } }));
-        dispatch(incrementSoundMetadataVoteAsync({ id: postId }));
+        dispatch(incrementSoundVoteAsync({ id: postId }));
       }
 
       if (onSuccess) onSuccess();
@@ -154,7 +154,7 @@ export const decrementVoteAynsc =
         const postRef = doc(db, 'users', userId, 'votes', postId);
         setDoc(postRef, { count: -1 });
         dispatch(updateUserVote({ postId, voteInfo: { count: -1 } }));
-        dispatch(decrementSoundMetadataVoteAsync({ id: postId }));
+        dispatch(decrementSoundVoteAsync({ id: postId }));
       }
 
       if (onSuccess) onSuccess();
@@ -172,7 +172,7 @@ export const incrementVoteAynsc =
         const postRef = doc(db, 'users', userId, 'votes', postId);
         setDoc(postRef, { count: 1 });
         dispatch(updateUserVote({ postId, voteInfo: { count: 1 } }));
-        dispatch(incrementSoundMetadataVoteAsync({ id: postId }));
+        dispatch(incrementSoundVoteAsync({ id: postId }));
       }
 
       if (onSuccess) onSuccess();
@@ -182,4 +182,4 @@ export const incrementVoteAynsc =
     }
   };
 
-export default soundMetadatasSlice.reducer;
+export default soundsSlice.reducer;
