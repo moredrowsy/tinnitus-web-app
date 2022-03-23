@@ -16,7 +16,7 @@ import {
 } from '../store/redux/slices/soundFiles';
 
 import './App.css';
-import { Home, Mixes, SignIn, SignUp, Sounds, Upload } from './routes';
+import { Home, Mixes, Posts, SignIn, SignUp, Sounds, Upload } from './routes';
 import Navbar from './Navbar';
 
 const navigation = [
@@ -84,6 +84,17 @@ function App() {
                 <Sounds
                   soundMetadas={soundMetadas}
                   toggleSoundFile={toggleSoundFile}
+                />
+              }
+            />
+            <Route
+              path='/sounds/:collectionId'
+              element={
+                <Posts
+                  userId={user ? user.uid : null}
+                  soundMetadas={soundMetadas}
+                  toggleSoundFile={toggleSoundFile}
+                  path='sounds'
                 />
               }
             />

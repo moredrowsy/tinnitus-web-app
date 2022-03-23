@@ -6,7 +6,6 @@ import {
   arrayUnion,
   collection,
   doc,
-  serverTimestamp,
   updateDoc,
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
@@ -96,7 +95,7 @@ function Upload({ user }) {
           authorId: user.uid,
           title: file.title,
           filename: filename,
-          timestamp: serverTimestamp(),
+          timestamp: Date.now(),
           storagePath,
           tags: Array.from(files[filename].tags),
           votes: 1,
