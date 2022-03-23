@@ -1,5 +1,5 @@
 import React from 'react';
-import Sound from '../Sound';
+import Sound from '../../Sound';
 
 function Sounds({ sounds, toggleSoundFile, userId, usernames, userVotes }) {
   const soundsArray = Object.keys(sounds)

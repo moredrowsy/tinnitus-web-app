@@ -7,11 +7,11 @@ import {
 } from '@heroicons/react/outline';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { getUsernameByIdAsync } from '../../../store/redux/slices/usernames';
+import { getUsernameByIdAsync } from '../store/redux/slices/usernames';
 import {
   decrementVoteAynsc,
   incrementVoteAynsc,
-} from '../../../store/redux/slices/sounds';
+} from '../store/redux/slices/sounds';
 
 function Sound({ sound, toggleSoundFile, userId, usernames, userVotes }) {
   const dispatch = useDispatch();

@@ -8,7 +8,7 @@ import {
 } from '../../../store/redux/slices/postCollections';
 import { formatDate } from '../../../utils';
 
-import Sound from '../Sound';
+import Sound from '../../Sound';
 
 function Posts({
   path,

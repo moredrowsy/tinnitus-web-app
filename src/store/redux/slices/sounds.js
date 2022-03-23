@@ -71,7 +71,7 @@ export const selectSounds = (state) => state[sliceKey];
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
-export const updateSoundsAsync = () => async (dispatch, getState) => {
+export const fetchSoundsAsync = () => async (dispatch, getState) => {
   const querySnapshot = await getDocs(collection(db, 'sounds'));
 
   // Serialize snapshot documents to json object for redux

@@ -7,7 +7,7 @@ import { Howl } from 'howler';
 
 import {
   selectSounds,
-  updateSoundsAsync,
+  fetchSoundsAsync,
   updateSoundStatus,
 } from '../store/redux/slices/sounds';
 import {
@@ -44,21 +44,23 @@ function App() {
   const usernames = useSelector(selectUsernames);
   const userVotes = useSelector(selectUserVotes);
 
+  // Fetch and update user information
+  // Only fetch when user object is different
   useEffect(() => {
     if (user) {
       dispatch(fetchUserAsync({ userId: user.uid }));
     }
-  }, [dispatch, user]);
 
-  useEffect(() => {
-    dispatch(updateSoundsAsync());
-    dispatch(fetchUsernamesAsync());
-  }, [dispatch]);
-
-  useEffect(() => {
+    // Fetch user vote information
     const userId = user ? user.uid : null;
     dispatch(fetchUserVotesAsync({ userId }));
   }, [dispatch, user]);
+
+  // Update sound and usernames information
+  useEffect(() => {
+    dispatch(fetchSoundsAsync());
+    dispatch(fetchUsernamesAsync());
+  }, [dispatch]);
 
   const addHowl = ({ storageKey, dataURL }) => {
     if (storageKey in howlStorage) {
@@ -108,7 +110,16 @@ function App() {
         <div className='max-w-7xl mx-auto'>
           <Routes>
             <Route path='/' element={<Home />} />
-            <Route path='/mixes' element={<Mixes />} />
+            <Route
+              path='/mixes'
+              element={
+                <Mixes
+                  sounds={sounds}
+                  toggleSoundFile={toggleSoundFile}
+                  userId={user ? user.uid : null}
+                />
+              }
+            />
             <Route path='/signin' element={<SignIn />} />
             <Route path='/signup' element={<SignUp />} />
             <Route

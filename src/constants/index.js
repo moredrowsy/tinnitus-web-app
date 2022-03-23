@@ -7,3 +7,5 @@ export const tags = [
   'river',
   'water',
 ];
+
+export const mixLimit = 5;
