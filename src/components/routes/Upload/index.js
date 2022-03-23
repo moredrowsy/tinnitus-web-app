@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { db } from '../../../store/firebase';
 import {
   addDoc,
@@ -11,13 +12,17 @@ import {
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { audioTrim } from '../../../utils';
+import { addSoundMetadatas } from '../../../store/redux/slices/soundMetadatas';
+import { updateUserVote } from '../../../store/redux/slices/userVotes';
+import { blobToDataURL } from '../../../utils';
 
 import { ArrowCircleUpIcon } from '@heroicons/react/outline';
 import { CheckCircleIcon } from '@heroicons/react/solid';
 
 const tags = ['noise', 'ocean', 'water', 'fire', 'crickets'];
 
-function Upload({ user }) {
+function Upload({ addHowl, user }) {
+  const dispatch = useDispatch();
   const [files, setFiles] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -71,6 +76,8 @@ function Upload({ user }) {
             };
           }
 
+          console.log({ file: file });
+
           setFiles({ ...files });
           setLoading(false);
         }
@@ -91,8 +98,12 @@ function Upload({ user }) {
         const soundPathRef = ref(storage, storagePath);
         await uploadBytes(soundPathRef, file.data);
 
+        // Add to howl storage locally
+        const dataURL = await blobToDataURL(file.data);
+        addHowl({ storageKey: storagePath, dataURL });
+
         // add sounds metadata to firebase database;
-        const docRef = await addDoc(collection(db, 'sounds'), {
+        const soundMetadata = {
           authorId: user.uid,
           title: file.title,
           filename: filename,
@@ -100,7 +111,10 @@ function Upload({ user }) {
           storagePath,
           tags: Array.from(files[filename].tags),
           votes: 1,
-        });
+        };
+        const docRef = await addDoc(collection(db, 'sounds'), soundMetadata);
+        soundMetadata.id = docRef.id;
+        dispatch(addSoundMetadatas({ soundMetadata }));
 
         // update user's sound array to firebase database
         await updateDoc(doc(db, 'users', user.uid), {
@@ -109,6 +123,7 @@ function Upload({ user }) {
 
         const postRef = doc(db, 'users', user.uid, 'votes', docRef.id);
         setDoc(postRef, { count: 1 });
+        dispatch(updateUserVote({ postId: docRef.id, voteInfo: { count: 1 } }));
 
         // update file on client to 'uploaded' status
         files[filename] = { ...file, status: 'uploaded' };
@@ -150,7 +165,7 @@ function Upload({ user }) {
   }
 
   return (
-    <div>
+    <div className='m-5'>
       <div
         onDrop={(e) => handleDrop(e)}
         onDragOver={(e) => handleDragOver(e)}

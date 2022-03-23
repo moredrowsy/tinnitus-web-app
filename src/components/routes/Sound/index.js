@@ -113,9 +113,9 @@ function Sound({
 
   return (
     <div className='flex' key={soundMetadata.id}>
-      <div className='flex-1 justify-center items-center m-10 bg-white'>
+      <div className='flex-1 justify-center items-center mb-5 bg-white'>
         <div className='rounded overflow-hidden shadow-lg'>
-          <div className='flex justify-start items-center font-bold text-xl mb-2 bg-gray-700 p-2 text-white'>
+          <div className='flex justify-start items-center font-bold text-xl bg-gray-700 pl-1 pr-1 text-white'>
             <div className='flex-none flex flex-col justify-center items-start'>
               <ChevronUpIcon
                 className={`h-5 w-7 ${
@@ -129,7 +129,7 @@ function Sound({
                 }
               />
               <div
-                className={`-mt-2 -mb-2 h-7 w-7 font-bold text-xl rounded-full flex items-center justify-center font-mono ${
+                className={`ml-2 h-2 w-3 font-bold text-sm rounded-full flex items-center justify-center font-mono ${
                   voteCount === 0 ? 'text-white' : 'text-red-400'
                 }`}
               >
@@ -147,15 +147,17 @@ function Sound({
                 }
               />
             </div>
-            <div className='flex-1 text-left'>{soundMetadata.title}</div>
+            <div className='flex-1 text-left text-base'>
+              {soundMetadata.title}
+            </div>
             <div className='flex-1 text-right text-xs'>{username || ''}</div>
           </div>
           <div className='flex justify-center items-center'>
-            <div className='flex-1 flex justify-center items-center'>
+            <div className='flex-1 mt-2 flex justify-center items-center'>
               {soundButton}
             </div>
           </div>
-          <div className='flex justify-center px-6 pt-4 pb-2'>
+          <div className='flex justify-center mt-2'>
             <Link
               to={`/sounds/${soundMetadata.id}`}
               className='inline-block bg-gray-700 rounded-full px-3 py-1 text-sm font-semibold text-white hover:bg-gray-200 hover:text-gray-700 underline mr-2 mb-2'
@@ -163,7 +165,7 @@ function Sound({
               Comments
             </Link>
           </div>
-          <div className='px-6 pt-4 pb-2'>
+          <div className='px-5 pb-2'>
             {soundMetadata.tags.map((tag) => (
               <span
                 key={tag}

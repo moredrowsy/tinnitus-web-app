@@ -13,7 +13,7 @@ function Sounds({
     .sort((a, b) => b.votes - a.votes);
 
   return (
-    <div className='w-full'>
+    <div className='m-5'>
       {soundMetadasArray.map((soundMetadata) => (
         <Sound
           key={soundMetadata.id}

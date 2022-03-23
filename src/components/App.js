@@ -53,6 +53,16 @@ function App() {
     dispatch(fetchUserVotesAsync({ userId }));
   }, [dispatch, user]);
 
+  const addHowl = ({ storageKey, dataURL }) => {
+    if (storageKey in howlStorage) {
+      howlStorage[storageKey].howl.stop();
+    }
+
+    const howl = new Howl({ src: dataURL, loop: true });
+    howlStorage[storageKey] = { howl, play: false };
+    setHowlStorage({ ...howlStorage });
+  };
+
   const toggleSoundFile = async ({ id, storageKey }) => {
     // Check if there is a howl file
     if (storageKey in howlStorage) {
@@ -119,7 +129,10 @@ function App() {
                 />
               }
             />
-            <Route path='/upload' element={<Upload user={user} />} />
+            <Route
+              path='/upload'
+              element={<Upload user={user} addHowl={addHowl} />}
+            />
           </Routes>
         </div>
       </div>

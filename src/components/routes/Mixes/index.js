@@ -1,7 +1,7 @@
 import React from 'react';
 
 function Mixes() {
-  return <div>Mixes</div>;
+  return <div className='m-5'>Mixes</div>;
 }
 
 export default Mixes;

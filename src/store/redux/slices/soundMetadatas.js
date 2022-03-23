@@ -19,6 +19,12 @@ export const soundMetadatasSlice = createSlice({
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
     // Use the PayloadAction type to declare the contents of `action.payload`
+    addSoundMetadatas: (state, action) => {
+      const { soundMetadata } = action.payload;
+      const { id } = soundMetadata;
+      state[id] = soundMetadata;
+      return state;
+    },
     updateSoundMetadatas: (state, action) => {
       state = { ...state, ...action.payload };
       return state;
@@ -51,6 +57,7 @@ export const soundMetadatasSlice = createSlice({
 });
 
 export const {
+  addSoundMetadatas,
   decrementSoundMetadataVote,
   incrementSoundMetadataVote,
   updateSoundMetadatas,

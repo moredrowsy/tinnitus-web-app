@@ -6,6 +6,7 @@ import {
   selectPostCollections,
   fetchPostsByCollectionIdAsync,
 } from '../../../store/redux/slices/postCollections';
+import { formatDate } from '../../../utils';
 
 import Sound from '../Sound';
 
@@ -23,10 +24,6 @@ function Posts({
   const posts = postCollections[collectionId];
   const soundMetadata = soundMetadas[collectionId];
   const dispatch = useDispatch();
-
-  //   useEffect(() => {
-  //     dispatch(addVoteAsync({ userId, postId: collectionId }));
-  //   }, [dispatch, collectionId, userId]);
 
   const addPost = () => {
     if (body) {
@@ -46,7 +43,7 @@ function Posts({
   }, [dispatch, collectionId, path]);
 
   return (
-    <div>
+    <div className='m-5'>
       <Sound
         soundMetadata={soundMetadata}
         toggleSoundFile={toggleSoundFile}
@@ -54,7 +51,7 @@ function Posts({
         usernames={usernames}
         userVotes={userVotes}
       />
-      <form onSubmit={onSubmit} className='m-10'>
+      <form onSubmit={onSubmit}>
         <div className='flex flex-col gap-4 items-center'>
           <textarea
             id='about'
@@ -75,29 +72,32 @@ function Posts({
           </div>
         </div>
       </form>
-      <div>
+      <div className='mt-5'>
         {posts &&
-          Object.keys(posts).map((key) => {
-            return (
-              <div key={key} className='flex'>
-                <div className='flex-1 justify-center items-center m-10 bg-white'>
-                  <div className='rounded overflow-hidden shadow-lg'>
-                    <div className='px-6 py-4'>
-                      <div className='font-bold text-xl'>
-                        {posts[key].authorId}
+          Object.keys(posts)
+            .map((key) => ({ id: key, ...posts[key] }))
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .map((post) => {
+              return (
+                <div key={post.id} className='flex'>
+                  <div className='flex-1 justify-center items-center mb-5 bg-white'>
+                    <div className='rounded overflow-hidden shadow-lg'>
+                      <div className='px-6 py-4'>
+                        <div className='font-bold text-xl'>
+                          {usernames[posts[post.id].authorId] || ''}
+                        </div>
+                        <p className='text-gray-700 text-base mt-5 mb-5'>
+                          {posts[post.id].body}
+                        </p>
+                        <p className='text-xs text-gray-600 flex items-center"'>
+                          {formatDate(posts[post.id].timestamp)}
+                        </p>
                       </div>
-                      <p className='text-gray-700 text-base mt-5 mb-5'>
-                        {posts[key].body}
-                      </p>
-                      <p className='text-xs text-gray-600 flex items-center"'>
-                        {posts[key].timestamp}
-                      </p>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
       </div>
     </div>
   );
