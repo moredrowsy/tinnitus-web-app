@@ -2,14 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { db } from '../../../store/firebase';
-import {
-  addDoc,
-  arrayUnion,
-  collection,
-  doc,
-  setDoc,
-  updateDoc,
-} from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { audioTrim } from '../../../utils';
 import { addSound } from '../../../store/redux/slices/sounds';
@@ -18,8 +11,8 @@ import { blobToDataURL } from '../../../utils';
 
 import { ArrowCircleUpIcon } from '@heroicons/react/outline';
 import { CheckCircleIcon } from '@heroicons/react/solid';
-
-const tags = ['noise', 'ocean', 'water', 'fire', 'crickets'];
+import { updateUserSoundsAsync } from '../../../store/redux/slices/user';
+import { tags } from '../../../constants';
 
 function Upload({ addHowl, user }) {
   const dispatch = useDispatch();
@@ -76,8 +69,6 @@ function Upload({ addHowl, user }) {
             };
           }
 
-          console.log({ file: file });
-
           setFiles({ ...files });
           setLoading(false);
         }
@@ -117,9 +108,7 @@ function Upload({ addHowl, user }) {
         dispatch(addSound({ sound }));
 
         // update user's sound array to firebase database
-        await updateDoc(doc(db, 'users', user.uid), {
-          sounds: arrayUnion(docRef.id),
-        });
+        dispatch(updateUserSoundsAsync({ soundIDs: [docRef.id] }));
 
         const postRef = doc(db, 'users', user.uid, 'votes', docRef.id);
         setDoc(postRef, { count: 1 });

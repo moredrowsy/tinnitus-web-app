@@ -26,6 +26,7 @@ import {
   fetchUserVotesAsync,
   selectUserVotes,
 } from '../store/redux/slices/userVotes';
+import { fetchUserAsync } from '../store/redux/slices/user';
 
 const navigation = [
   { name: 'Dashboard', path: '/', exact: true },
@@ -42,6 +43,12 @@ function App() {
   const sounds = useSelector(selectSounds);
   const usernames = useSelector(selectUsernames);
   const userVotes = useSelector(selectUserVotes);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchUserAsync({ userId: user.uid }));
+    }
+  }, [dispatch, user]);
 
   useEffect(() => {
     dispatch(updateSoundsAsync());

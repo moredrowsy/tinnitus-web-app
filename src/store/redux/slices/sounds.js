@@ -80,7 +80,7 @@ export const updateSoundsAsync = () => async (dispatch, getState) => {
     const data = doc.data();
     const { authorId, filename, storagePath, title, tags, timestamp, votes } =
       data;
-    temp[doc.id] = {
+    const sound = {
       id: doc.id,
       authorId,
       filename,
@@ -91,6 +91,7 @@ export const updateSoundsAsync = () => async (dispatch, getState) => {
       votes,
       status: 'none',
     };
+    temp[doc.id] = sound;
   });
 
   dispatch(updateSounds(temp));
