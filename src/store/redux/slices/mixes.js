@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { db } from '../../firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { updateUserMixesAsync } from './user';
+import { updateUserVoteAsync } from './userVotes';
 
 const sliceKey = 'mixes';
 const initialState = {};
@@ -64,36 +66,37 @@ export const selectMixes = (state) => state[sliceKey];
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
 export const updateMixesAsync = () => async (dispatch, getState) => {
-  //   const querySnapshot = await getDocs(collection(db, 'mixes'));
-  //   // Serialize snapshot documents to json object for redux
-  //   const temp = {};
-  //   querySnapshot.docs.forEach((doc) => {
-  //     const data = doc.data();
-  //     const { authorId, filename, soundIDs, title, tags, timestamp, votes } =
-  //       data;
-  //     const mix = {
-  //       id: doc.id,
-  //       authorId,
-  //       filename,
-  //       soundIDs, // array of sound ids
-  //       tags,
-  //       title,
-  //       timestamp: timestamp.seconds,
-  //       votes,
-  //       status: 'none',
-  //     };
-  //     temp[doc.id] = mix;
-  //   });
-  //   dispatch(updateMixes(temp));
+  const querySnapshot = await getDocs(collection(db, 'mixes'));
+  // Serialize snapshot documents to json object for redux
+  const temp = {};
+  querySnapshot.docs.forEach((doc) => {
+    const data = doc.data();
+    const { authorId, soundIDs, title, timestamp, votes } = data;
+    const mix = {
+      id: doc.id,
+      authorId,
+      soundIDs, // array of sound ids
+      title,
+      timestamp,
+      votes,
+      status: 'none',
+    };
+    temp[doc.id] = mix;
+  });
+  dispatch(updateMixes(temp));
 };
 
 export const addMixAsync =
-  ({ mix, onSuccess, onError }) =>
+  ({ userId, mix, onSuccess, onError }) =>
   async (dispatch, getState) => {
     try {
       const docRef = await addDoc(collection(db, 'mixes'), mix);
       mix.id = docRef.id;
       dispatch(addMix({ mix }));
+      dispatch(updateUserMixesAsync({ mixIDs: [docRef.id] }));
+
+      const voteInfo = { count: 1 };
+      dispatch(updateUserVoteAsync({ userId, postId: docRef.id, voteInfo }));
 
       if (onSuccess) onSuccess();
     } catch (err) {

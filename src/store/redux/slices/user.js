@@ -1,12 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {
-  arrayUnion,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  updateDoc,
-} from 'firebase/firestore';
+import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 const sliceKey = 'user';
@@ -27,6 +20,11 @@ export const usernamesSlice = createSlice({
       state = { ...state, ...user };
       return state;
     },
+    updateUserMixes: (state, action) => {
+      const { mixIDs } = action.payload;
+      state.mixes = [...state.sounds, ...mixIDs];
+      return state;
+    },
     updateUserSounds: (state, action) => {
       const { soundIDs } = action.payload;
       state.sounds = [...state.sounds, ...soundIDs];
@@ -35,7 +33,8 @@ export const usernamesSlice = createSlice({
   },
 });
 
-export const { setUser, updateUser, updateUserSounds } = usernamesSlice.actions;
+export const { setUser, updateUser, updateUserMixes, updateUserSounds } =
+  usernamesSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -44,6 +43,20 @@ export const selectUser = (state) => state[sliceKey];
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
+export const updateUserMixesAsync =
+  ({ mixIDs }) =>
+  async (dispatch, getState) => {
+    try {
+      const { user } = getState();
+      updateDoc(doc(db, 'users', user.uid), {
+        mixes: arrayUnion(...mixIDs),
+      });
+      dispatch(updateUserMixes({ mixIDs }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
 export const updateUserSoundsAsync =
   ({ soundIDs }) =>
   async (dispatch, getState) => {

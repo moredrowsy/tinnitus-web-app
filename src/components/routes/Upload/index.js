@@ -6,7 +6,10 @@ import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { audioTrim } from '../../../utils';
 import { addSound } from '../../../store/redux/slices/sounds';
-import { updateUserVote } from '../../../store/redux/slices/userVotes';
+import {
+  updateUserVote,
+  updateUserVoteAsync,
+} from '../../../store/redux/slices/userVotes';
 import { blobToDataURL } from '../../../utils';
 
 import { ArrowCircleUpIcon } from '@heroicons/react/outline';
@@ -110,9 +113,10 @@ function Upload({ addHowl, user }) {
         // update user's sound array to firebase database
         dispatch(updateUserSoundsAsync({ soundIDs: [docRef.id] }));
 
-        const postRef = doc(db, 'users', user.uid, 'votes', docRef.id);
-        setDoc(postRef, { count: 1 });
-        dispatch(updateUserVote({ postId: docRef.id, voteInfo: { count: 1 } }));
+        const voteInfo = { count: 1 };
+        dispatch(
+          updateUserVoteAsync({ userId: user.uid, postId: docRef.id, voteInfo })
+        );
 
         // update file on client to 'uploaded' status
         files[filename] = { ...file, status: 'uploaded' };

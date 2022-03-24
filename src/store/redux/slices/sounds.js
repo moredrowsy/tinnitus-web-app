@@ -87,7 +87,7 @@ export const fetchSoundsAsync = () => async (dispatch, getState) => {
       storagePath,
       tags,
       title,
-      timestamp: timestamp.seconds,
+      timestamp,
       votes,
       status: 'none',
     };

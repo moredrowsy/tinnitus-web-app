@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 const sliceKey = 'userVotes';
@@ -51,6 +51,23 @@ export const fetchUserVotesAsync =
         dispatch(fetchUserVotes({ userVotes }));
       } else {
         dispatch(fetchUserVotes({ userVotes: {} }));
+      }
+
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      if (onError) onError(err);
+      console.log({ err });
+    }
+  };
+
+export const updateUserVoteAsync =
+  ({ userId, postId, voteInfo, onSuccess, onError }) =>
+  async (dispatch, getState) => {
+    try {
+      if (userId) {
+        const postRef = doc(db, 'users', userId, 'votes', postId);
+        setDoc(postRef, { count: 1 });
+        dispatch(updateUserVote({ postId, voteInfo }));
       }
 
       if (onSuccess) onSuccess();

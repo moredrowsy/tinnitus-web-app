@@ -4,7 +4,9 @@ export const tags = [
   'fire',
   'noise',
   'ocean',
+  'rain',
   'river',
+  'stream',
   'water',
 ];
 

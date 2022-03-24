@@ -64,11 +64,9 @@ function Track({ isSelcted, sound, toggleSelected, toggleSoundFile }) {
       className={`flex border-b p-1 ${
         isSelcted ? 'bg-sky-400' : 'hover:bg-gray-100'
       }`}
+      onClick={() => toggleSelected(sound.id)}
     >
-      <div
-        className='flex-1 text-sm overflow-hidden text-ellipsis'
-        onClick={() => toggleSelected(sound.id)}
-      >
+      <div className='flex-1 text-sm overflow-hidden text-ellipsis'>
         {sound.title}
       </div>
       <div>{soundButton}</div>
