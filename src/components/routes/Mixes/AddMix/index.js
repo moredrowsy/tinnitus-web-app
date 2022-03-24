@@ -81,7 +81,7 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
           type='checkbox'
           className='peer absolute top-0 inset-x-0 w-full h-10 opacity-0 z-10 cursor-pointer'
         />
-        <div className='bg-gray-800 h-10 w-full pl-3 flex items-center'>
+        <div className='bg-gray-700 h-10 w-full pl-3 flex items-center'>
           <h1 className='text-md font-semibold text-white'>Add Mix</h1>
         </div>
         {/* arrow down */}
