@@ -1,6 +1,8 @@
 export { default as Home } from './Home';
 export { default as Mixes } from './Mixes';
-export { default as Posts } from './Posts';
+export { default as MixPost } from './MixPost';
+export { default as Post } from './Post';
+export { default as SoundPost } from './SoundPost';
 export { default as SignIn } from './SignIn';
 export { default as SignUp } from './SignUp';
 export { default as Sounds } from './Sounds';

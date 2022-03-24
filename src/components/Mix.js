@@ -1,6 +1,12 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import {
+  decrementVoteAynsc,
+  incrementVoteAynsc,
+} from '../store/redux/slices/sounds';
+
 import Track from './Track';
-import PlayButton from './PlayButton';
+import Item from './Item';
 
 function Mix({
   mix,
@@ -11,39 +17,43 @@ function Mix({
   usernames,
   userVotes,
 }) {
+  const dispatch = useDispatch();
+
+  if (!mix) return null;
+
   const soundsArray = mix.soundIDs.map((soundId) => sounds[soundId]);
 
   const toggleMixSounds = () => {
     toggleMix({ mixId: mix.id, soundList: soundsArray });
   };
 
-  return (
-    <div className='flex flex-col justify-center items-stretch bg-white rounded mb-5 shadow-md'>
-      <div className='flex-1 flex justify-center items-center bg-gray-200 text-gray-800 rounded-tl rounded-tr text-center p-1'>
-        <div className='flex-none font-semibold'>{mix.votes}</div>
-        <div className='flex-1 font-bold'>{mix.title}</div>
-        <div className='flex-none'>
-          <PlayButton
-            noneClassName={'h-6 w-6 text-gray-400'}
-            playClassName={'h-6 w-6 text-blue-400'}
-            pauseClassName={'h-6 w-6 text-orange-400'}
-            downloadingClassName={
-              'w-5 h-5 text-gray-200 animate-spin dark:text-gray-600 fill-red-600'
-            }
-            status={mix.status}
-            toggleFn={toggleMixSounds}
-          />
-        </div>
-      </div>
+  const incrementVote = () => {
+    dispatch(incrementVoteAynsc({ userId, postId: mix.id }));
+  };
 
-      <div className='flex-1'>
+  const decrementVote = () => {
+    dispatch(decrementVoteAynsc({ userId, postId: mix.id }));
+  };
+
+  return (
+    <Item
+      commentLink={`/mixes/${mix.id}`}
+      decrementVote={decrementVote}
+      incrementVote={incrementVote}
+      item={mix}
+      toggleFn={toggleMixSounds}
+      userId={userId}
+      usernames={usernames}
+      userVotes={userVotes}
+    >
+      <div className='border-t'>
         {soundsArray.map((sound) => (
           <div className='border-b' key={sound.id}>
             <Track sound={sound} toggleSoundFile={toggleSoundFile} />
           </div>
         ))}
       </div>
-    </div>
+    </Item>
   );
 }
 

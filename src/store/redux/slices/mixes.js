@@ -71,11 +71,12 @@ export const fetchMixesAsync = () => async (dispatch, getState) => {
   const temp = {};
   querySnapshot.docs.forEach((doc) => {
     const data = doc.data();
-    const { authorId, soundIDs, title, timestamp, votes } = data;
+    const { authorId, soundIDs, tags, title, timestamp, votes } = data;
     const mix = {
       id: doc.id,
       authorId,
       soundIDs, // array of sound ids
+      tags,
       title,
       timestamp,
       votes,

@@ -5,7 +5,7 @@ import {
   ChevronDownIcon,
 } from '@heroicons/react/outline';
 import Track from '../../../Track';
-import { mixLimit } from '../../../../constants';
+import { mixLimit, tags } from '../../../../constants';
 import { useDispatch } from 'react-redux';
 import { addMixAsync } from '../../../../store/redux/slices/mixes';
 
@@ -14,6 +14,7 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
   const dispatch = useDispatch();
   const [selectedSounds, setSelectedSounds] = useState(new Set());
   const [mixTitle, setMixTitle] = useState('');
+  const [mixTags, setMixTags] = useState(new Set());
   const [toSounds, setToSounds] = useState({});
   const fromSoundsKeys = Object.keys(sounds).filter(
     (key) => !toSounds.hasOwnProperty(key)
@@ -63,6 +64,7 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
         title: mixTitle,
         soundIDs: Object.keys(toSounds),
         timestamp: Date.now(),
+        tags: Array.from(mixTags),
         votes: 1,
       };
       dispatch(addMixAsync({ userId, mix, onSuccess }));
@@ -70,7 +72,19 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
       if (inputArrowRef) {
         inputArrowRef.current.click();
       }
+
+      setMixTags(new Set());
     }
+  };
+
+  const onToggleMixTag = (tag) => {
+    if (mixTags.has(tag)) {
+      mixTags.delete(tag);
+    } else {
+      mixTags.add(tag);
+    }
+
+    setMixTags(new Set(mixTags));
   };
 
   return (
@@ -153,6 +167,31 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
                   </div>
                 )}
               </div>
+            </div>
+            <div className='flex mt-5 justify-center items-center'>
+              {tags.map((tag) => {
+                const hasTag = mixTags.has(tag);
+                let className =
+                  'inline-block font-semibold px-3 py-1 rounded-full text-md hover:bg-gray-400 hover:text-white';
+                const unSelectedColors = 'bg-gray-200 text-gray-700';
+                const selectedColors = 'bg-gray-400 text-white';
+
+                if (hasTag) {
+                  className = `${className} ${selectedColors}`;
+                } else {
+                  className = `${className} ${unSelectedColors}`;
+                }
+
+                return (
+                  <div
+                    key={tag}
+                    className={`text-center text-xs select-none mr-1 cursor-pointer ${className}`}
+                    onClick={() => onToggleMixTag(tag)}
+                  >
+                    #{tag}
+                  </div>
+                );
+              })}
             </div>
             <div className='flex flex-col justify-center items-center mt-5'>
               <button

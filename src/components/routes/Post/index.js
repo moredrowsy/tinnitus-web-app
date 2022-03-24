@@ -1,28 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   addPostAsync,
-  selectPostCollections,
   fetchPostsByCollectionIdAsync,
 } from '../../../store/redux/slices/postCollections';
 import { formatDate } from '../../../utils';
 
-import Sound from '../../Sound';
-
-function Posts({
-  path,
-  sounds,
-  toggleSoundFile,
-  userId,
-  usernames,
-  userVotes,
-}) {
+function Post({ path, posts, userId, usernames }) {
   const [body, setBody] = useState('');
   const { collectionId } = useParams();
-  const postCollections = useSelector(selectPostCollections);
-  const posts = postCollections[collectionId];
-  const sound = sounds[collectionId];
+
   const dispatch = useDispatch();
 
   const addPost = () => {
@@ -43,14 +31,7 @@ function Posts({
   }, [dispatch, collectionId, path]);
 
   return (
-    <div className='m-5'>
-      <Sound
-        sound={sound}
-        toggleSoundFile={toggleSoundFile}
-        userId={userId}
-        usernames={usernames}
-        userVotes={userVotes}
-      />
+    <div>
       <form onSubmit={onSubmit}>
         <div className='flex flex-col gap-4 items-center'>
           <textarea
@@ -83,7 +64,7 @@ function Posts({
                   <div className='flex-1 justify-center items-center mb-5 bg-white'>
                     <div className='rounded overflow-hidden shadow-lg'>
                       <div className='px-6 py-4'>
-                        <div className='font-bold text-xl'>
+                        <div className='font-bold text-sm'>
                           {usernames[posts[post.id].authorId] || ''}
                         </div>
                         <p className='text-gray-700 text-base mt-5 mb-5'>
@@ -103,4 +84,4 @@ function Posts({
   );
 }
 
-export default Posts;
+export default Post;

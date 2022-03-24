@@ -21,7 +21,16 @@ import {
 } from '../store/redux/slices/usernames';
 
 import './App.css';
-import { Home, Mixes, Posts, SignIn, SignUp, Sounds, Upload } from './routes';
+import {
+  Home,
+  Mixes,
+  SoundPost,
+  SignIn,
+  SignUp,
+  Sounds,
+  Upload,
+  MixPost,
+} from './routes';
 import Navbar from './Navbar';
 import {
   fetchUserVotesAsync,
@@ -209,6 +218,21 @@ function App() {
                 />
               }
             />
+            <Route
+              path='/mixes/:collectionId'
+              element={
+                <MixPost
+                  mixes={mixes}
+                  path='mixes'
+                  sounds={sounds}
+                  toggleMix={toggleMix}
+                  toggleSoundFile={toggleSoundFile}
+                  userId={user ? user.uid : null}
+                  usernames={usernames}
+                  userVotes={userVotes}
+                />
+              }
+            />
             <Route path='/signin' element={<SignIn />} />
             <Route path='/signup' element={<SignUp />} />
             <Route
@@ -226,7 +250,7 @@ function App() {
             <Route
               path='/sounds/:collectionId'
               element={
-                <Posts
+                <SoundPost
                   path='sounds'
                   sounds={sounds}
                   toggleSoundFile={toggleSoundFile}

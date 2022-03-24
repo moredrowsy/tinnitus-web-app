@@ -78,7 +78,7 @@ export const fetchSoundsAsync = () => async (dispatch, getState) => {
   const temp = {};
   querySnapshot.docs.forEach((doc) => {
     const data = doc.data();
-    const { authorId, filename, storagePath, title, tags, timestamp, votes } =
+    const { authorId, filename, storagePath, tags, title, timestamp, votes } =
       data;
     const sound = {
       id: doc.id,

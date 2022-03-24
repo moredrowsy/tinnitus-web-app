@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { db } from '../../../store/firebase';
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { audioTrim } from '../../../utils';
 import { addSound } from '../../../store/redux/slices/sounds';
-import {
-  updateUserVote,
-  updateUserVoteAsync,
-} from '../../../store/redux/slices/userVotes';
+import { updateUserVoteAsync } from '../../../store/redux/slices/userVotes';
 import { blobToDataURL } from '../../../utils';
 
 import { ArrowCircleUpIcon } from '@heroicons/react/outline';
