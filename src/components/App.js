@@ -12,6 +12,7 @@ import {
 } from '../store/redux/slices/sounds';
 import {
   getSoundFileAsync,
+  getSoundFilesAsync,
   selectSoundFiles,
 } from '../store/redux/slices/soundFiles';
 import {
@@ -27,6 +28,11 @@ import {
   selectUserVotes,
 } from '../store/redux/slices/userVotes';
 import { fetchUserAsync } from '../store/redux/slices/user';
+import {
+  fetchMixesAsync,
+  selectMixes,
+  updateMixStatus,
+} from '../store/redux/slices/mixes';
 
 const navigation = [
   { name: 'Dashboard', path: '/', exact: true },
@@ -41,6 +47,7 @@ function App() {
   const soundFiles = useSelector(selectSoundFiles);
   const dispatch = useDispatch();
   const sounds = useSelector(selectSounds);
+  const mixes = useSelector(selectMixes);
   const usernames = useSelector(selectUsernames);
   const userVotes = useSelector(selectUserVotes);
 
@@ -58,8 +65,9 @@ function App() {
 
   // Update sound and usernames information
   useEffect(() => {
-    dispatch(fetchSoundsAsync());
     dispatch(fetchUsernamesAsync());
+    dispatch(fetchSoundsAsync());
+    dispatch(fetchMixesAsync());
   }, [dispatch]);
 
   const addHowl = ({ storageKey, dataURL }) => {
@@ -72,8 +80,7 @@ function App() {
     setHowlStorage({ ...howlStorage });
   };
 
-  const toggleSoundFile = async ({ id, storageKey }) => {
-    // Check if there is a howl file
+  const toggleHowl = (id, storageKey) => {
     if (storageKey in howlStorage) {
       const { howl, play } = howlStorage[storageKey];
 
@@ -87,6 +94,35 @@ function App() {
         dispatch(updateSoundStatus({ id, status: 'playing' }));
       }
       setHowlStorage({ ...howlStorage });
+    }
+  };
+
+  const playHowl = (id, storageKey) => {
+    if (storageKey in howlStorage) {
+      const { howl, play } = howlStorage[storageKey];
+
+      howl.play();
+      howlStorage[storageKey].play = true;
+      dispatch(updateSoundStatus({ id, status: 'playing' }));
+      setHowlStorage({ ...howlStorage });
+    }
+  };
+
+  const stopHowl = (id, storageKey) => {
+    if (storageKey in howlStorage) {
+      const { howl, play } = howlStorage[storageKey];
+
+      howl.stop();
+      howlStorage[storageKey].play = false;
+      dispatch(updateSoundStatus({ id, status: 'stopped' }));
+      setHowlStorage({ ...howlStorage });
+    }
+  };
+
+  const toggleSoundFile = async ({ id, storageKey }) => {
+    // Check if there is a howl file
+    if (storageKey in howlStorage) {
+      toggleHowl(id, storageKey);
     }
     // No howl file, need to download and then create a howl file
     else {
@@ -103,6 +139,55 @@ function App() {
     }
   };
 
+  const toggleMix = ({ mixId, soundList }) => {
+    if (mixes[mixId].status === 'playing') {
+      for (const sound of soundList) {
+        const { id, storagePath: storageKey } = sound;
+
+        stopHowl(id, storageKey);
+      }
+      dispatch(updateMixStatus({ id: mixId, status: 'stopped' }));
+    } else {
+      dispatch(updateMixStatus({ id: mixId, status: 'downloading' }));
+
+      const onSuccess = (datas) => {
+        const tempHowlStorage = {};
+
+        // Build temporary howl storage
+        for (const data of datas) {
+          const { storageKey, dataURL } = data;
+
+          // Create howl
+          const howl = new Howl({
+            src: [dataURL],
+            loop: true,
+          });
+
+          tempHowlStorage[storageKey] = { howl, play: true };
+        }
+
+        // Playing howl files
+        for (const sound of soundList) {
+          const { id, storagePath: storageKey } = sound;
+
+          if (howlStorage.hasOwnProperty(storageKey)) {
+            const { howl } = howlStorage[storageKey];
+            howl.play();
+            dispatch(updateSoundStatus({ id, status: 'playing' }));
+          } else if (tempHowlStorage.hasOwnProperty(storageKey)) {
+            const { howl } = tempHowlStorage[storageKey];
+            howl.play();
+            dispatch(updateSoundStatus({ id, status: 'playing' }));
+          }
+        }
+
+        setHowlStorage({ ...howlStorage, ...tempHowlStorage });
+        dispatch(updateMixStatus({ id: mixId, status: 'playing' }));
+      };
+      dispatch(getSoundFilesAsync({ sounds: soundList, onSuccess }));
+    }
+  };
+
   return (
     <>
       <Navbar navigation={navigation} user={user} />
@@ -114,9 +199,13 @@ function App() {
               path='/mixes'
               element={
                 <Mixes
+                  mixes={mixes}
                   sounds={sounds}
+                  toggleMix={toggleMix}
                   toggleSoundFile={toggleSoundFile}
                   userId={user ? user.uid : null}
+                  usernames={usernames}
+                  userVotes={userVotes}
                 />
               }
             />

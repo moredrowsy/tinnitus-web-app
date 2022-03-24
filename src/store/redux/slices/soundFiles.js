@@ -14,7 +14,7 @@ export const soundFilesSlice = createSlice({
     addSoundFile: (state, action) => {
       const { storageKey, dataURL } = action.payload;
       if (!(storageKey in state)) {
-        state[storageKey] = dataURL;
+        state[storageKey] = true;
       }
       return state;
     },
@@ -36,10 +36,35 @@ export const getSoundFileAsync =
     try {
       dispatch(updateSoundStatus({ id, status: 'downloading' }));
       const dataURL = await getStorageFile(storageKey);
-      dispatch(addSoundFile(storageKey, dataURL));
+      dispatch(addSoundFile({ storageKey, dataURL }));
       dispatch(updateSoundStatus({ id, status: 'complete' }));
 
       if (onSuccess) onSuccess(dataURL);
+    } catch (err) {
+      if (onError) onError(err);
+    }
+  };
+
+export const getSoundFilesAsync =
+  ({ sounds, onSuccess, onError }) =>
+  async (dispatch, getState) => {
+    try {
+      const datas = [];
+      const soundFiles = getState().soundFiles;
+
+      for (const sound of sounds) {
+        const { id, storagePath: storageKey } = sound;
+
+        if (!soundFiles.hasOwnProperty(storageKey)) {
+          dispatch(updateSoundStatus({ id, status: 'downloading' }));
+          const dataURL = await getStorageFile(storageKey);
+          datas.push({ id, storageKey, dataURL });
+          dispatch(addSoundFile({ storageKey, dataURL }));
+          dispatch(updateSoundStatus({ id, status: 'complete' }));
+        }
+      }
+
+      if (onSuccess) onSuccess(datas);
     } catch (err) {
       if (onError) onError(err);
     }

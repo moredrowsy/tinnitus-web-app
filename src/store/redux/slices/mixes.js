@@ -65,7 +65,7 @@ export const selectMixes = (state) => state[sliceKey];
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
-export const updateMixesAsync = () => async (dispatch, getState) => {
+export const fetchMixesAsync = () => async (dispatch, getState) => {
   const querySnapshot = await getDocs(collection(db, 'mixes'));
   // Serialize snapshot documents to json object for redux
   const temp = {};

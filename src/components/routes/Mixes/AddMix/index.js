@@ -109,13 +109,14 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
             <div className='flex flex-col lg:flex-row'>
               <div className='bg-white h-40 max-h-40 overflow-auto rounded-md shadow-md lg:flex-1'>
                 {fromSoundsKeys.map((soundId) => (
-                  <Track
-                    key={soundId}
-                    isSelcted={selectedSounds.has(soundId)}
-                    sound={sounds[soundId]}
-                    toggleSoundFile={toggleSoundFile}
-                    toggleSelected={toggleSelected}
-                  />
+                  <div className='border-b' key={soundId}>
+                    <Track
+                      isSelcted={selectedSounds.has(soundId)}
+                      sound={sounds[soundId]}
+                      toggleSoundFile={toggleSoundFile}
+                      toggleSelected={toggleSelected}
+                    />
+                  </div>
                 ))}
               </div>
               <div className='flex justify-center items-center m-2 lg:flex-col'>
@@ -134,7 +135,7 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
                   />
                 </div>
               </div>
-              <div className='bg-white h-40 max-h-40 overflow-auto rounded-md shadow-md lg:flex-1'>
+              <div className='relative bg-white h-40 max-h-40 overflow-auto rounded-md shadow-md lg:flex-1'>
                 {Object.keys(toSounds).map((soundId) => (
                   <Track
                     key={soundId}
@@ -144,6 +145,13 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
                     toggleSoundFile={toggleSoundFile}
                   />
                 ))}
+                {Object.keys(toSounds).length === 0 && (
+                  <div className='absolute top-0 left-0 flex justify-center items-center w-full h-full'>
+                    <div className='flex-1 text-center text-gray-400 uppercase text-sm'>
+                      add items here
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div className='flex flex-col justify-center items-center mt-5'>
