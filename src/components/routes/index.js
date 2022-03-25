@@ -1,4 +1,6 @@
 export { default as Home } from './Home';
+export { default as NoiseGenerator } from './NoiseGenerator';
+export { default as NotFound } from './NotFound';
 export { default as Mixes } from './Mixes';
 export { default as MixPost } from './MixPost';
 export { default as Post } from './Post';

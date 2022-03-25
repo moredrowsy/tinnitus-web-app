@@ -26,7 +26,7 @@ function Navbar({ navigation, user }) {
     <Disclosure as='nav' className='bg-gray-800 z-20'>
       {({ open }) => (
         <>
-          <div className='max-w-7xl mx-auto px-2 sm:px-6 lg:px-8'>
+          <div className='max-w-7xl mx-auto px-2 md:x-6 lg:px-8'>
             <div className='relative flex items-center justify-between h-16'>
               <div className='absolute inset-y-0 left-0 flex items-center sm:hidden'>
                 {/* Mobile menu button*/}
@@ -61,7 +61,7 @@ function Navbar({ navigation, user }) {
                 </div>
               </div>
               {user === null ? (
-                <div className='absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0'>
+                <div className='absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 md:r-0'>
                   <NavbarLink
                     name={'Sign up'}
                     path={'/signup'}
@@ -71,7 +71,7 @@ function Navbar({ navigation, user }) {
                   <NavbarLink name={'Login'} path={'/signin'} exact={true} />
                 </div>
               ) : (
-                <div className='absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0'>
+                <div className='absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 md:r-0'>
                   <button
                     type='button'
                     className='bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white'

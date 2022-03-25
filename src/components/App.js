@@ -23,6 +23,7 @@ import {
 import './App.css';
 import {
   Home,
+  NoiseGenerator,
   Mixes,
   SoundPost,
   SignIn,
@@ -30,6 +31,7 @@ import {
   Sounds,
   Upload,
   MixPost,
+  NotFound,
 } from './routes';
 import Navbar from './Navbar';
 import {
@@ -47,6 +49,7 @@ const navigation = [
   { name: 'Dashboard', path: '/', exact: true },
   { name: 'Sounds', path: '/sounds', exact: true },
   { name: 'Mixes', path: '/mixes', exact: true },
+  { name: 'Noise Gen', path: '/noise-gen', exact: true },
   { name: 'Upload', path: '/upload', exact: true },
 ];
 
@@ -233,6 +236,7 @@ function App() {
                 />
               }
             />
+            <Route path='/noise-gen' element={<NoiseGenerator />} />
             <Route path='/signin' element={<SignIn />} />
             <Route path='/signup' element={<SignUp />} />
             <Route
@@ -264,6 +268,7 @@ function App() {
               path='/upload'
               element={<Upload user={user} addHowl={addHowl} />}
             />
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </div>
       </div>

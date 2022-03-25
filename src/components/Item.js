@@ -69,7 +69,7 @@ function Item({
         <div className='text-center md:border-b p-1 font-bold'>
           {item.title}
         </div>
-        <div className='hidden md:flex'>
+        <div className='hidden md:flex md:justify-center md:items-center'>
           <div className='flex-1 text-xs p-1'>{username}</div>
           <div className='flex-1 text-xs p-1 flex justify-center'>
             <Link
