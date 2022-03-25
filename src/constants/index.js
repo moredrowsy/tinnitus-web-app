@@ -11,3 +11,5 @@ export const tags = [
 ];
 
 export const mixLimit = 5;
+
+export const noiseColors = ['brown', 'pink', 'white'];
