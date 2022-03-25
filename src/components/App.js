@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../store/firebase';
-import { Howl } from 'howler';
 
 import {
   selectSounds,
@@ -45,6 +44,8 @@ import {
   updateMixStatus,
 } from '../store/redux/slices/mixes';
 
+import * as Tone from 'tone';
+
 const navigation = [
   { name: 'Dashboard', path: '/', exact: true },
   { name: 'Sounds', path: '/sounds', exact: true },
@@ -55,7 +56,7 @@ const navigation = [
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
-  const [howlStorage, setHowlStorage] = useState({});
+  const [playerStorage, setPlayerStorage] = useState({});
   const soundFiles = useSelector(selectSoundFiles);
   const dispatch = useDispatch();
   const sounds = useSelector(selectSounds);
@@ -82,119 +83,121 @@ function App() {
     dispatch(fetchMixesAsync());
   }, [dispatch]);
 
-  const addHowl = ({ storageKey, dataURL }) => {
-    if (storageKey in howlStorage) {
-      howlStorage[storageKey].howl.stop();
+  const addPlayer = async ({ storageKey, dataURL }) => {
+    if (storageKey in playerStorage) {
+      playerStorage[storageKey].player.stop();
     }
 
-    const howl = new Howl({ src: dataURL, loop: true });
-    howlStorage[storageKey] = { howl, play: false };
-    setHowlStorage({ ...howlStorage });
+    const player = new Tone.Player().toDestination();
+    player.loop = true;
+
+    await player.load(dataURL);
+    playerStorage[storageKey] = { player, play: false };
+    setPlayerStorage({ ...playerStorage });
   };
 
-  const toggleHowl = (id, storageKey) => {
-    if (storageKey in howlStorage) {
-      const { howl, play } = howlStorage[storageKey];
+  const togglePlayer = (id, storageKey) => {
+    if (storageKey in playerStorage) {
+      const { player } = playerStorage[storageKey];
 
-      if (play) {
-        howl.stop();
-        howlStorage[storageKey].play = false;
+      if (player.state === 'started') {
+        player.stop();
         dispatch(updateSoundStatus({ id, status: 'stopped' }));
       } else {
-        howl.play();
-        howlStorage[storageKey].play = true;
-        dispatch(updateSoundStatus({ id, status: 'playing' }));
+        player.start();
+        dispatch(updateSoundStatus({ id, status: 'played' }));
       }
-      setHowlStorage({ ...howlStorage });
+      setPlayerStorage({ ...playerStorage });
     }
   };
 
-  const playHowl = (id, storageKey) => {
-    if (storageKey in howlStorage) {
-      const { howl, play } = howlStorage[storageKey];
+  const startPlayer = (id, storageKey) => {
+    if (storageKey in playerStorage) {
+      const { player } = playerStorage[storageKey];
 
-      howl.play();
-      howlStorage[storageKey].play = true;
-      dispatch(updateSoundStatus({ id, status: 'playing' }));
-      setHowlStorage({ ...howlStorage });
+      player.start();
+      dispatch(updateSoundStatus({ id, status: 'played' }));
+      setPlayerStorage({ ...playerStorage });
     }
   };
 
-  const stopHowl = (id, storageKey) => {
-    if (storageKey in howlStorage) {
-      const { howl, play } = howlStorage[storageKey];
+  const stopPlayer = (id, storageKey) => {
+    if (storageKey in playerStorage) {
+      const { player } = playerStorage[storageKey];
 
-      howl.stop();
-      howlStorage[storageKey].play = false;
+      player.stop();
       dispatch(updateSoundStatus({ id, status: 'stopped' }));
-      setHowlStorage({ ...howlStorage });
+      setPlayerStorage({ ...playerStorage });
     }
   };
 
   const toggleSoundFile = async ({ id, storageKey }) => {
-    // Check if there is a howl file
-    if (storageKey in howlStorage) {
-      toggleHowl(id, storageKey);
+    // Check if there is a sound player in storage
+    if (storageKey in playerStorage) {
+      togglePlayer(id, storageKey);
     }
-    // No howl file, need to download and then create a howl file
+    // No sound player, need to dl and load file to new player
     else {
-      const onSuccess = (dataURL) => {
-        const howl = new Howl({
-          src: [dataURL],
-          loop: true,
+      const onSuccess = async (dataURL) => {
+        const player = new Tone.Player().toDestination();
+        player.loop = true;
+
+        await player.load(dataURL);
+        setPlayerStorage({
+          ...playerStorage,
+          [storageKey]: { player },
         });
-        howl.play();
-        setHowlStorage({ ...howlStorage, [storageKey]: { howl, play: true } });
-        dispatch(updateSoundStatus({ id, status: 'playing' }));
+
+        player.start();
+        dispatch(updateSoundStatus({ id, status: 'played' }));
       };
       dispatch(getSoundFileAsync({ id, storageKey, onSuccess }));
     }
   };
 
   const toggleMix = ({ mixId, soundList }) => {
-    if (mixes[mixId].status === 'playing') {
+    if (mixes[mixId].status === 'played') {
       for (const sound of soundList) {
         const { id, storagePath: storageKey } = sound;
 
-        stopHowl(id, storageKey);
+        stopPlayer(id, storageKey);
       }
       dispatch(updateMixStatus({ id: mixId, status: 'stopped' }));
     } else {
       dispatch(updateMixStatus({ id: mixId, status: 'downloading' }));
 
-      const onSuccess = (datas) => {
-        const tempHowlStorage = {};
+      const onSuccess = async (datas) => {
+        const tempPlayerStorage = {};
 
-        // Build temporary howl storage
+        // Build temporary player storage
         for (const data of datas) {
           const { storageKey, dataURL } = data;
 
-          // Create howl
-          const howl = new Howl({
-            src: [dataURL],
-            loop: true,
-          });
+          // Create player
+          const player = new Tone.Player().toDestination();
+          player.loop = true;
 
-          tempHowlStorage[storageKey] = { howl, play: true };
+          await player.load(dataURL);
+          tempPlayerStorage[storageKey] = { player };
         }
 
-        // Playing howl files
+        // played player files
         for (const sound of soundList) {
           const { id, storagePath: storageKey } = sound;
 
-          if (howlStorage.hasOwnProperty(storageKey)) {
-            const { howl } = howlStorage[storageKey];
-            howl.play();
-            dispatch(updateSoundStatus({ id, status: 'playing' }));
-          } else if (tempHowlStorage.hasOwnProperty(storageKey)) {
-            const { howl } = tempHowlStorage[storageKey];
-            howl.play();
-            dispatch(updateSoundStatus({ id, status: 'playing' }));
+          if (playerStorage.hasOwnProperty(storageKey)) {
+            const { player } = playerStorage[storageKey];
+            player.start();
+            dispatch(updateSoundStatus({ id, status: 'played' }));
+          } else if (tempPlayerStorage.hasOwnProperty(storageKey)) {
+            const { player } = tempPlayerStorage[storageKey];
+            player.start();
+            dispatch(updateSoundStatus({ id, status: 'played' }));
           }
         }
 
-        setHowlStorage({ ...howlStorage, ...tempHowlStorage });
-        dispatch(updateMixStatus({ id: mixId, status: 'playing' }));
+        setPlayerStorage({ ...playerStorage, ...tempPlayerStorage });
+        dispatch(updateMixStatus({ id: mixId, status: 'played' }));
       };
       dispatch(getSoundFilesAsync({ sounds: soundList, onSuccess }));
     }
@@ -266,7 +269,7 @@ function App() {
             />
             <Route
               path='/upload'
-              element={<Upload user={user} addHowl={addHowl} />}
+              element={<Upload user={user} addPlayer={addPlayer} />}
             />
             <Route path='*' element={<NotFound />} />
           </Routes>

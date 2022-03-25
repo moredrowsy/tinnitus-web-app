@@ -14,7 +14,7 @@ import { CheckCircleIcon } from '@heroicons/react/solid';
 import { updateUserSoundsAsync } from '../../../store/redux/slices/user';
 import { tags } from '../../../constants';
 
-function Upload({ addHowl, user }) {
+function Upload({ addPlayer, user }) {
   const dispatch = useDispatch();
   const [files, setFiles] = useState({});
   const [loading, setLoading] = useState(false);
@@ -89,9 +89,9 @@ function Upload({ addHowl, user }) {
         const soundPathRef = ref(storage, storagePath);
         await uploadBytes(soundPathRef, file.data);
 
-        // Add to howl storage locally
+        // Add to player storage locally
         const dataURL = await blobToDataURL(file.data);
-        addHowl({ storageKey: storagePath, dataURL });
+        addPlayer({ storageKey: storagePath, dataURL });
 
         // add sounds to firebase database;
         const sound = {

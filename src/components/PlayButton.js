@@ -16,7 +16,7 @@ function PlayButton({
   // Logic for sound button
   let playButton;
   switch (status) {
-    case 'playing':
+    case 'played':
       playButton = (
         <PauseIcon
           className={`cursor-pointer animate-pulse ${pauseClassName}`}
