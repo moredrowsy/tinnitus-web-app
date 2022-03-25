@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import * as Tone from 'tone';
 import { PauseIcon, PlayIcon } from '@heroicons/react/solid';
-import { noiseColors } from '../../../constants';
+import { NOISE_COLOR } from '../../../constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectNoises } from '../../../store/redux/slices/noises';
 
 const noiseBgColorClassNames = {
   brown: 'bg-light-brown',
@@ -17,32 +19,8 @@ const noiseDescriptions = {
     'Similar to pink noise but with evenmore reduced higher frequencies. It sounds similar to river or strong wind.',
 };
 
-function NoiseGenerator() {
-  const [noises] = useState(() => {
-    const noiseMap = {};
-    noiseColors.forEach(
-      (noiseColor) =>
-        (noiseMap[noiseColor] = new Tone.Noise(noiseColor).toDestination())
-    );
-    return noiseMap;
-  });
-  const [isNoisesPlaying, setIsNoisesPlaying] = useState(() => {
-    const noiseStateMap = {};
-    noiseColors.forEach((noiseColor) => (noiseStateMap[noiseColor] = false));
-    return noiseStateMap;
-  });
-
-  const toggleNoise = (noiseColor) => {
-    const noise = noises[noiseColor];
-    if (noise.state === 'started') {
-      noise.stop();
-      isNoisesPlaying[noiseColor] = false;
-    } else {
-      noise.start();
-      isNoisesPlaying[noiseColor] = true;
-    }
-    setIsNoisesPlaying({ ...isNoisesPlaying });
-  };
+function NoiseGenerator({ toggleNoise }) {
+  const noiseStates = useSelector(selectNoises);
 
   return (
     <div className='m-5'>
@@ -51,7 +29,7 @@ function NoiseGenerator() {
         <span className='font-bold italic'>colors</span> of noise and each
         impart a different feel.
       </label>
-      {Object.keys(noises).map((noiseColor) => (
+      {Object.keys(noiseStates).map((noiseColor) => (
         <div key={noiseColor} className='flex  justify-center shadow-md mb-5'>
           <div
             className={`${noiseBgColorClassNames[noiseColor]} flex-1 flex flex-col justify-center items-stretch rounded-tl rounded-bl p-1`}
@@ -67,7 +45,7 @@ function NoiseGenerator() {
           <div
             className={`${noiseBgColorClassNames[noiseColor]} rounded-tr rounded-br flex justify-center items-center`}
           >
-            {isNoisesPlaying[noiseColor] ? (
+            {noiseStates[noiseColor].state === 'started' ? (
               <PauseIcon
                 className={`cursor-pointer w-12 h-12 text-gray-600`}
                 aria-hidden='true'

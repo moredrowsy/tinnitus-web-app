@@ -1,4 +1,4 @@
-export const tags = [
+export const TAGS = [
   'crickets',
   'fan',
   'fire',
@@ -10,6 +10,22 @@ export const tags = [
   'water',
 ];
 
-export const mixLimit = 5;
+export const MIX_LIMIT = 5;
 
-export const noiseColors = ['brown', 'pink', 'white'];
+export const NOISE_COLOR = ['brown', 'pink', 'white'];
+
+export const FREQ = {
+  default: 8000,
+  min: 0,
+  max: 15000,
+};
+
+export const VOLUME = {
+  default: -80,
+  min: -80,
+  max: 0,
+};
+
+export const ACRN = {
+  type: { tone: 'tone', sequence: 'seq' },
+};

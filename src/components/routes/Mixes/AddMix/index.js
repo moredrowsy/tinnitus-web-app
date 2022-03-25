@@ -5,7 +5,7 @@ import {
   ChevronDownIcon,
 } from '@heroicons/react/outline';
 import Track from '../../../Track';
-import { mixLimit, tags } from '../../../../constants';
+import { MIX_LIMIT, TAGS } from '../../../../constants';
 import { useDispatch } from 'react-redux';
 import { addMixAsync } from '../../../../store/redux/slices/mixes';
 
@@ -29,7 +29,7 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
   const addToMix = () => {
     let count = 0;
     for (const soundId of selectedSounds) {
-      if (Object.keys(toSounds).length + count > mixLimit) break;
+      if (Object.keys(toSounds).length + count > MIX_LIMIT) break;
 
       toSounds[soundId] = sounds[soundId];
       ++count;
@@ -169,7 +169,7 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
               </div>
             </div>
             <div className='flex mt-5 justify-center items-center'>
-              {tags.map((tag) => {
+              {TAGS.map((tag) => {
                 const hasTag = mixTags.has(tag);
                 let className =
                   'inline-block font-semibold px-3 py-1 rounded-full text-md hover:bg-gray-400 hover:text-white';
@@ -202,7 +202,7 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
                 Create Mix
               </button>
               <p className='text-xs text-gray-500 mt-1'>
-                up to {mixLimit} tracks
+                up to {MIX_LIMIT} tracks
               </p>
             </div>
           </form>

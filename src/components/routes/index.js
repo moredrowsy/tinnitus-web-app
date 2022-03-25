@@ -1,4 +1,5 @@
-export { default as Home } from './Home';
+export { default as AcrnPage } from './AcrnPage';
+export { default as Dashboard } from './Dashboard';
 export { default as NoiseGenerator } from './NoiseGenerator';
 export { default as NotFound } from './NotFound';
 export { default as Mixes } from './Mixes';

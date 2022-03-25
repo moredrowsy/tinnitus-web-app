@@ -12,7 +12,7 @@ import { blobToDataURL } from '../../../utils';
 import { ArrowCircleUpIcon } from '@heroicons/react/outline';
 import { CheckCircleIcon } from '@heroicons/react/solid';
 import { updateUserSoundsAsync } from '../../../store/redux/slices/user';
-import { tags } from '../../../constants';
+import { TAGS } from '../../../constants';
 
 function Upload({ addPlayer, user }) {
   const dispatch = useDispatch();
@@ -305,7 +305,7 @@ function Upload({ addPlayer, user }) {
                           className='px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap'
                         >
                           <div className='flex gap-1'>
-                            {tags.map((tag) => {
+                            {TAGS.map((tag) => {
                               const hasTag = files[filename].tags.has(tag);
                               let className =
                                 'inline-block font-semibold px-3 py-1 rounded-full text-md hover:bg-gray-400 hover:text-white';
