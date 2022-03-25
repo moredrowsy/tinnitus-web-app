@@ -5,11 +5,23 @@ import { ACRN, FREQ, VOLUME } from '../constants';
 import { selectAcrns } from '../store/redux/slices/acrns';
 import PlayButton from './PlayButton';
 
-function Acrn({ acrnFreqChange, acrnVolChange, toggleTone }) {
+function Acrn({ acrnFreqChange, acrnVolChange, playerStorage, toggleTone }) {
   const acrns = useSelector(selectAcrns);
-  const [frequnecy, setFrequency] = useState(FREQ.default);
-  const [volume, setVolume] = useState(VOLUME.default);
   const [type, setType] = useState(ACRN.type.tone);
+  const [frequnecy, setFrequency] = useState(() => {
+    if (playerStorage.hasOwnProperty(type)) {
+      return Math.round(playerStorage[type].player.frequency.value);
+    } else {
+      return FREQ.default;
+    }
+  });
+  const [volume, setVolume] = useState(() => {
+    if (playerStorage.hasOwnProperty(type)) {
+      return playerStorage[type].player.volume.value;
+    } else {
+      return VOLUME.default;
+    }
+  });
 
   let acrnState = 'stopped';
   switch (type) {
@@ -98,7 +110,7 @@ function Acrn({ acrnFreqChange, acrnVolChange, toggleTone }) {
             className='w-full h-2 bg-blue-400 md:bg-blue-100 appearance-none'
             type='range'
             min={VOLUME.min}
-            step='1'
+            step='0.1'
             max={VOLUME.max}
             value={volume}
             onChange={(ev) => onVolChange(Number(ev.target.value))}

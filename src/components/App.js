@@ -307,6 +307,7 @@ function App() {
                 <AcrnPage
                   acrnFreqChange={acrnFreqChange}
                   acrnVolChange={acrnVolChange}
+                  playerStorage={playerStorage}
                   toggleTone={toggleTone}
                 />
               }
