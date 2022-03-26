@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PauseIcon, PlayIcon } from '@heroicons/react/solid';
 import { VOLUME } from '../constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateNoiseVolumeAsync } from '../store/redux/slices/user';
 
 function Noise({
   changeNoiseVolume,
@@ -8,12 +10,34 @@ function Noise({
   noise,
   noiseClassName,
   toggleNoise,
+  userId,
 }) {
-  const [volume, setVolume] = useState(noise ? noise.volume : VOLUME.default);
+  const dispatch = useDispatch();
+  const userVolume = useSelector((state) => {
+    if (noise && state.user && state.user.noises.hasOwnProperty(noise.color)) {
+      return state.user.noises[noise.color].volume;
+    }
+    return VOLUME.default;
+  });
+  const [volume, setVolume] = useState(userVolume);
+
+  // Update default volume to user volume if it exists
+  useEffect(() => {
+    if (userVolume && userVolume !== VOLUME.default) {
+      setVolume(userVolume);
+    }
+  }, [userVolume]);
 
   const onVolChange = (newVolValue) => {
     setVolume(newVolValue);
     changeNoiseVolume({ color: noise.color, volume });
+    dispatch(
+      updateNoiseVolumeAsync({
+        userId,
+        color: noise.color,
+        volume: newVolValue,
+      })
+    );
   };
 
   return (

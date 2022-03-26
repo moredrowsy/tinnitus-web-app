@@ -55,6 +55,15 @@ export const usernamesSlice = createSlice({
       state.mixes[mixId].mixVolumes[soundId] = volume;
       return state;
     },
+    updateUserNoiseVolume: (state, action) => {
+      const { color, volume } = action.payload;
+      if (state.noises.hasOwnProperty(color)) {
+        state.noises[color].volume = volume;
+      } else {
+        state.noises[color] = { volume };
+      }
+      return state;
+    },
     updateUserSound: (state, action) => {
       const { soundId, userSound } = action.payload;
       if (state.sounds.hasOwnProperty(soundId)) {
@@ -73,6 +82,27 @@ export const usernamesSlice = createSlice({
       }
       return state;
     },
+    updateUserNoise: (state, action) => {
+      const { color, noise } = action.payload;
+      if (state.noises.hasOwnProperty(color)) {
+        state.noises[color] = { ...state.noises[color], ...noise };
+      } else {
+        state.sounds[color] = noise;
+      }
+      return state;
+    },
+    updateUserNoises: (state, action) => {
+      const userNoises = action.payload;
+      for (const userNoise of userNoises) {
+        const { color, noise } = userNoise;
+        if (state.noises.hasOwnProperty(color)) {
+          state.noises[color] = { ...state.noises[color], ...noise };
+        } else {
+          state.noises[color] = noise;
+        }
+      }
+      return state;
+    },
   },
 });
 
@@ -81,6 +111,9 @@ export const {
   updateUser,
   updateUserMix,
   updateUserMixVolume,
+  updateUserNoise,
+  updateUserNoises,
+  updateUserNoiseVolume,
   updateUserSound,
   updateUserSoundVolume,
   updateUserSoundVote,
@@ -219,6 +252,34 @@ export const updateUserMixTrackVolumeAsync =
     }
   };
 
+const updateNoiseVolumeAsyncDebounce = debounce(
+  ({ userId, color, volume, dispatch }) => {
+    try {
+      const postRef = doc(db, 'users', userId, 'noises', color);
+      setDoc(postRef, { volume });
+      dispatch(updateUserNoiseVolume({ color, volume }));
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  DEBOUNCE_WAIT
+);
+
+export const updateNoiseVolumeAsync =
+  ({ userId, color, volume, onSuccess, onError }) =>
+  async (dispatch, getState) => {
+    try {
+      if (userId) {
+        updateNoiseVolumeAsyncDebounce({ userId, color, volume, dispatch });
+      }
+
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      if (onError) onError(err);
+      console.log({ err });
+    }
+  };
+
 export const fetchUserAsync =
   ({ userId }) =>
   async (dispatch, getState) => {
@@ -244,11 +305,20 @@ export const fetchUserAsync =
         mixes[q.id] = data;
       });
 
+      const noisesRef = collection(db, 'users', userId, 'noises');
+      const noisesSnapshot = await getDocs(noisesRef);
+      const noises = {};
+      noisesSnapshot.forEach((q) => {
+        const data = q.data();
+        noises[q.id] = data;
+      });
+
       const reduxUser = {
         uid: userId,
         displayName,
         sounds,
         mixes,
+        noises,
       };
 
       dispatch(updateUser({ user: reduxUser }));

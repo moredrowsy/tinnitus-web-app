@@ -479,6 +479,7 @@ function App() {
                 <NoiseGenerator
                   changeNoiseVolume={changeNoiseVolume}
                   toggleNoise={toggleNoise}
+                  userId={user ? user.uid : null}
                 />
               }
             />
