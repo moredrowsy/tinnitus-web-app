@@ -5,10 +5,16 @@ import { ACRN, FREQ, VOLUME } from '../constants';
 import { selectAcrns } from '../store/redux/slices/acrns';
 import PlayButton from './PlayButton';
 
-function Acrn({ acrnFreqChange, acrnVolChange, playerStorage, toggleTone }) {
+function Acrn({
+  acrnFreqChange,
+  acrnVolChange,
+  playerStorage,
+  toggleSequence,
+  toggleTone,
+}) {
   const acrns = useSelector(selectAcrns);
   const [type, setType] = useState(ACRN.type.tone);
-  const [frequnecy, setFrequency] = useState(() => {
+  const [frequency, setFrequency] = useState(() => {
     if (playerStorage.hasOwnProperty(type)) {
       return Math.round(playerStorage[type].player.frequency.value);
     } else {
@@ -52,24 +58,40 @@ function Acrn({ acrnFreqChange, acrnVolChange, playerStorage, toggleTone }) {
   const onToggleAcrnPlay = () => {
     if (type === ACRN.type.tone) {
       toggleTone();
+    } else {
+      toggleSequence(frequency, volume);
     }
   };
+
+  let isDisabledBySequence = false;
+  if (type === ACRN.type.sequence && acrns.hasOwnProperty(type)) {
+    const { state } = acrns[type];
+
+    if (state === 'started') {
+      isDisabledBySequence = true;
+    }
+  }
+
+  const sldierClasses = isDisabledBySequence
+    ? 'bg-gray-100 md:bg-gray-100 accent-gray-100'
+    : 'bg-blue-400 md:bg-blue-100 accent-pink-500';
 
   return (
     <div className='flex justify-center items-stretch mb-5 bg-white shadow-md rounded'>
       <div className='flex-initial min-w-10 flex flex-col justify-center items-stretch bg-gray-200 rounded-tl rounded-bl'>
-        <div
+        <button
           className={`flex-1 flex justify-center items-center px-3 py-1 cursor-pointer ${
             type === ACRN.type.tone
               ? 'bg-gray-400 text-gray-100 rounded-tl'
               : ''
-          }`}
+          } ${isDisabledBySequence ? 'text-gray-300' : ''}`}
+          disabled={isDisabledBySequence}
           onClick={() => setType(ACRN.type.tone)}
         >
           Tone
-        </div>
+        </button>
         <div className='border-b border-gray-400'></div>
-        <div
+        <button
           className={`flex-1 flex justify-center items-center px-3 py-1 cursor-pointer ${
             type === ACRN.type.sequence
               ? 'bg-gray-400 text-gray-100 rounded-tl'
@@ -78,24 +100,25 @@ function Acrn({ acrnFreqChange, acrnVolChange, playerStorage, toggleTone }) {
           onClick={() => setType(ACRN.type.sequence)}
         >
           Sequence
-        </div>
+        </button>
       </div>
       <div className='flex-1 flex flex-col justify-center bg-gray-200 md:bg-white border-l border-r border-gray-400 md:border-0'>
         <div className='text-center px-2'>
-          <label htmlFor='frequnecy'>
+          <label htmlFor='frequency'>
             <span className='font-semibold text-gray-600 text-xs uppercase'>
               Frequency:
             </span>{' '}
-            <span className='text-sm'>{frequnecy} Hz</span>
+            <span className='text-sm'>{frequency} Hz</span>
           </label>
           <input
-            id='frequnecy'
-            className='w-full h-2 bg-blue-400 md:bg-blue-100 appearance-none'
+            id='frequency'
+            className={`${sldierClasses} w-full h-2 appearance-none`}
             type='range'
             min={FREQ.min}
             step='1'
             max={FREQ.max}
-            value={frequnecy}
+            value={frequency}
+            disabled={isDisabledBySequence}
             onChange={(ev) => onFreqChange(Number(ev.target.value))}
           />
         </div>
@@ -107,12 +130,13 @@ function Acrn({ acrnFreqChange, acrnVolChange, playerStorage, toggleTone }) {
           </label>
           <input
             id='volume'
-            className='w-full h-2 bg-blue-400 md:bg-blue-100 appearance-none'
+            className={`${sldierClasses} w-full h-2 appearance-none`}
             type='range'
             min={VOLUME.min}
             step='0.1'
             max={VOLUME.max}
             value={volume}
+            disabled={isDisabledBySequence}
             onChange={(ev) => onVolChange(Number(ev.target.value))}
           />
         </div>

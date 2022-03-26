@@ -4,7 +4,9 @@ import Acrn from '../../Acrn';
 function AcrnPage({
   acrnFreqChange,
   acrnVolChange,
+  onGenAcrnSequence,
   playerStorage,
+  toggleSequence,
   toggleTone,
 }) {
   return (
@@ -27,7 +29,9 @@ function AcrnPage({
       <Acrn
         acrnFreqChange={acrnFreqChange}
         acrnVolChange={acrnVolChange}
+        onGenAcrnSequence={onGenAcrnSequence}
         playerStorage={playerStorage}
+        toggleSequence={toggleSequence}
         toggleTone={toggleTone}
       />
     </div>

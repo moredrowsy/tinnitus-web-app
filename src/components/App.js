@@ -49,6 +49,7 @@ import * as Tone from 'tone';
 import { ACRN, FREQ, NOISE_COLOR, VOLUME } from '../constants';
 import { setNoise, setNoises } from '../store/redux/slices/noises';
 import { setAcrn } from '../store/redux/slices/acrns';
+import { shuffleArray } from '../utils';
 
 const navigation = [
   { name: 'Dashboard', path: '/', exact: true },
@@ -81,6 +82,7 @@ function App() {
     NOISE_COLOR.forEach((noiseColor) => {
       if (!playerStorage.hasOwnProperty(noiseColor)) {
         const player = new Tone.Noise(noiseColor).toDestination();
+        player.loop = true;
         noiseMap[noiseColor] = { player };
 
         const noiseInfo = { color: noiseColor, noise: { state: 'stopped' } };
@@ -103,9 +105,11 @@ function App() {
       const player = new Tone.Oscillator({
         frequency: FREQ.default,
       }).toDestination();
+      player.loop = true;
       player.volume.value = VOLUME.default;
       playerStorage[ACRN.type.tone] = { player };
       dispatch(setAcrn({ type: ACRN.type.tone, acrn: { state: 'stopped' } }));
+      setPlayerStorage({ ...playerStorage });
     }
   }, [dispatch, playerStorage]);
 
@@ -264,11 +268,6 @@ function App() {
       player.frequency.value = newFreqValue;
       setPlayerStorage({ ...playerStorage });
     }
-    if (playerStorage.hasOwnProperty(ACRN.type.sequence)) {
-      const { player } = playerStorage[ACRN.type.sequence];
-      player.frequency.value = newFreqValue;
-      setPlayerStorage({ ...playerStorage });
-    }
   };
 
   const acrnVolChange = (newVolValue) => {
@@ -277,10 +276,104 @@ function App() {
       player.volume.value = newVolValue;
       setPlayerStorage({ ...playerStorage });
     }
+  };
+
+  // @see acrn tool for frequencies randomness
+  const genAcrnFrequencies = (freq) => [
+    Math.floor(freq * 0.773 - 44.5),
+    Math.floor(freq * 0.903 - 21.5),
+    Math.floor(freq * 1.09 + 52),
+    Math.floor(freq * 1.395 + 26.5),
+  ];
+
+  // @see acrn tool: content of events do not matter so can be anything
+  // only need to ensure correct number of beats
+  const genAcrnEvents = () => {
+    const events = [];
+
+    for (let i = 0; i < ACRN.sequence.loopRepeat; ++i) {
+      events.push(...[0, 0, 0, 0]);
+    }
+
+    for (let i = 0; i < ACRN.sequence.restLength; ++i) {
+      events.push([0]);
+    }
+
+    return events;
+  };
+
+  const onGenAcrnSequence = (freq, volume) => {
+    const synth = new Tone.PolySynth(Tone.Synth, {
+      oscillator: {
+        type: 'sine',
+      },
+      envelope: {
+        attack: 0.1,
+        decay: 0.0,
+        sustain: 0.07,
+        release: 0.08,
+      },
+      volume,
+    }).toDestination();
+
+    let count = 0;
+    const acrnEvents = genAcrnEvents();
+    const acrnFrequencies = genAcrnFrequencies(freq);
+    let curFrequencies = [];
+    const maxPatternLength = ACRN.sequence.loopRepeat * acrnFrequencies.length;
+
+    // Create sequence player
+    const player = new Tone.Sequence((time, event) => {
+      ++count;
+
+      if (count < maxPatternLength) {
+        if (curFrequencies.length === 0) {
+          curFrequencies = shuffleArray(acrnFrequencies.slice());
+        }
+        synth.triggerAttackRelease(curFrequencies.pop(), '4n');
+      } else {
+        if (count >= maxPatternLength + ACRN.sequence.restLength) {
+          count = 0;
+        }
+      }
+    }, acrnEvents);
+
+    // Check if seq is already playing; if so, stop it
     if (playerStorage.hasOwnProperty(ACRN.type.sequence)) {
+      const { player: oldSeqPlayer } = playerStorage[ACRN.type.sequence];
+      oldSeqPlayer.stop();
+    }
+
+    player.loop = true;
+    playerStorage[ACRN.type.sequence] = { player };
+    dispatch(setAcrn({ type: ACRN.type.sequence, acrn: { state: 'stopped' } }));
+    setPlayerStorage({ ...playerStorage });
+    return player;
+  };
+
+  const toggleSequence = (freq, volume) => {
+    if (Tone.Transport.state === 'started') {
       const { player } = playerStorage[ACRN.type.sequence];
-      player.volume.value = newVolValue;
-      setPlayerStorage({ ...playerStorage });
+      player.stop();
+      player.cancel();
+      player.dispose();
+      Tone.Transport.stop();
+      dispatch(
+        setAcrn({
+          type: ACRN.type.sequence,
+          acrn: { state: Tone.Transport.state },
+        })
+      );
+    } else {
+      const p = onGenAcrnSequence(freq, volume);
+      p.start(0);
+      Tone.Transport.start();
+      dispatch(
+        setAcrn({
+          type: ACRN.type.sequence,
+          acrn: { state: Tone.Transport.state },
+        })
+      );
     }
   };
 
@@ -307,7 +400,9 @@ function App() {
                 <AcrnPage
                   acrnFreqChange={acrnFreqChange}
                   acrnVolChange={acrnVolChange}
+                  onGenAcrnSequence={onGenAcrnSequence}
                   playerStorage={playerStorage}
+                  toggleSequence={toggleSequence}
                   toggleTone={toggleTone}
                 />
               }

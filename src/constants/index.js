@@ -27,5 +27,9 @@ export const VOLUME = {
 };
 
 export const ACRN = {
-  type: { tone: 'tone', sequence: 'seq' },
+  type: { tone: 'tone', sequence: 'seq', synthesizer: 'synth' },
+  sequence: {
+    loopRepeat: 4,
+    restLength: 4,
+  },
 };
