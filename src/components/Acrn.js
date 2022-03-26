@@ -74,7 +74,7 @@ function Acrn({
 
   const sldierClasses = isDisabledBySequence
     ? 'bg-gray-100 md:bg-gray-100 accent-gray-100'
-    : 'bg-blue-400 md:bg-blue-100 accent-pink-500';
+    : 'bg-blue-400 md:bg-blue-100 accent-pink-500 transition-opacity duration-300 opacity-50 hover:opacity-100';
 
   return (
     <div className='flex justify-center items-stretch mb-5 bg-white shadow-md rounded'>
