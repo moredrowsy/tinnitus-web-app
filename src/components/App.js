@@ -51,6 +51,7 @@ import {
 } from '../store/redux/slices/noises';
 import { setAcrn } from '../store/redux/slices/acrns';
 import { shuffleArray } from '../utils';
+import Profile from './routes/Profile';
 
 const navigation = [
   { name: 'Dashboard', path: '/', exact: true },
@@ -483,6 +484,7 @@ function App() {
                 />
               }
             />
+            <Route path='/profile' element={<Profile user={user} />} />
             <Route path='/signin' element={<SignIn />} />
             <Route path='/signup' element={<SignUp />} />
             <Route

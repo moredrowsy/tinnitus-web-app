@@ -1,68 +1,73 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import { auth, db } from '../../../store/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import {
+  selectUser,
+  updateUserDisplayNameAsync,
+} from '../../../store/redux/slices/user';
 
 import { LockClosedIcon } from '@heroicons/react/solid';
-import EarLogo from '../../../assets/images/ear-logo.svg';
 
-function SignUp() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+function Profile({ user }) {
+  const dispatch = useDispatch();
+  const userProfile = useSelector(selectUser);
+  const [displayName, setDisplayName] = useState(userProfile.displayName);
   const [errMsg, setErrMsg] = useState(null);
 
-  const signUp = async () => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-
-      await setDoc(doc(db, 'users', user.uid), {
-        displayName: user.email,
-      });
-
-      setErrMsg(null);
-      navigate('/');
-    } catch (err) {
-      const errCode = err.code;
-
-      console.log({ errCode });
-
-      if (errCode === 'auth/email-already-in-use') {
-        setErrMsg('Email already in use');
-      } else if (errCode === 'auth/weak-password') {
-        setErrMsg('Password must be 6 or more characters long.');
-      } else {
-        setErrMsg('Something went wrong');
-      }
-    }
-  };
+  useEffect(() => {
+    setDisplayName(userProfile.displayName);
+  }, [userProfile.displayName]);
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
-    signUp();
+    if (userProfile !== displayName) {
+      const onSuccess = () => {
+        setErrMsg(null);
+      };
+      const onError = (err) => {
+        setErrMsg('Something went wrong...');
+      };
+      dispatch(
+        updateUserDisplayNameAsync(
+          { displayName, userId: user.uid },
+          onSuccess,
+          onError
+        )
+      );
+    }
   };
+
+  if (!user) {
+    return (
+      <div className='block m-5 text-md text-center font-medium text-gray-700'>
+        <Link className='underline' to='/signin'>
+          Login
+        </Link>{' '}
+        or{' '}
+        <Link className='underline' to='/signup'>
+          create
+        </Link>{' '}
+        an account to upload files
+      </div>
+    );
+  }
 
   return (
     <div className='min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
-      <div className='max-w-md w-full space-y-8'>
+      <div className='max-w-md w-full'>
         <div>
-          <img className='mx-auto h-12 w-auto' src={EarLogo} alt='EarLogo' />
           <h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>
-            Create an account
+            Profile
           </h2>
         </div>
         <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
           <input type='hidden' name='remember' defaultValue='true' />
           <div className='rounded-md shadow-sm -space-y-px'>
             <div>
-              <label htmlFor='email-address' className='sr-only'>
+              <label
+                htmlFor='email-address'
+                className='text-sm uppercase font-semibold'
+              >
                 Email address
               </label>
               <input
@@ -71,26 +76,29 @@ function SignUp() {
                 type='email'
                 autoComplete='email'
                 required
-                className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'
+                className='mb-5 appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'
                 placeholder='Email address'
-                value={email}
-                onChange={(ev) => setEmail(ev.target.value)}
+                value={user.email}
+                disabled={true}
               />
             </div>
             <div>
-              <label htmlFor='password' className='sr-only'>
-                Password
+              <label
+                htmlFor='displayName'
+                className='text-sm uppercase font-semibold'
+              >
+                Display Name
               </label>
               <input
-                id='password'
-                name='password'
-                type='password'
-                autoComplete='current-password'
+                id='displayName'
+                name='displayName'
+                type='text'
+                autoComplete='current-displayName'
                 required
                 className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'
-                placeholder='Password'
-                value={password}
-                onChange={(ev) => setPassword(ev.target.value)}
+                placeholder='Display Name'
+                value={displayName}
+                onChange={(ev) => setDisplayName(ev.target.value)}
               />
             </div>
           </div>
@@ -106,7 +114,7 @@ function SignUp() {
                   aria-hidden='true'
                 />
               </span>
-              Sign up
+              Update Profile
             </button>
           </div>
 
@@ -124,4 +132,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default Profile;

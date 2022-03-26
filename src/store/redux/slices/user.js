@@ -10,6 +10,7 @@ import {
 import { db } from '../../firebase';
 import { debounce } from '../../../utils';
 import { DEBOUNCE_WAIT } from '../../../constants';
+import { addUsername } from './usernames';
 
 const sliceKey = 'user';
 const initialState = {
@@ -29,12 +30,16 @@ export const usernamesSlice = createSlice({
       const { user } = action.payload;
       return user;
     },
+    updateUserDisplayName: (state, action) => {
+      const displayName = action.payload;
+      state.displayName = displayName;
+      return state;
+    },
     updateUser: (state, action) => {
       const { user } = action.payload;
       state = { ...state, ...user };
       return state;
     },
-
     updateUserSoundVote: (state, action) => {
       const { soundId, vote } = action.payload;
       state.sounds[soundId].vote = vote;
@@ -109,6 +114,7 @@ export const usernamesSlice = createSlice({
 export const {
   setUser,
   updateUser,
+  updateUserDisplayName,
   updateUserMix,
   updateUserMixVolume,
   updateUserNoise,
@@ -127,6 +133,25 @@ export const selectUser = (state) => state[sliceKey];
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
+export const updateUserDisplayNameAsync =
+  ({ displayName, userId }, onSuccess, onError) =>
+  async (dispatch, getState) => {
+    try {
+      const userRef = doc(db, 'users', userId);
+      updateDoc(userRef, {
+        displayName,
+      });
+      dispatch(updateUserDisplayName(displayName));
+      dispatch(addUsername({ id: userId, username: displayName }));
+
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      console.log(err);
+
+      if (onError) onError();
+    }
+  };
+
 export const updateUserMixesAsync =
   ({ userId, mixId, userMix }) =>
   async (dispatch, getState) => {
