@@ -5,11 +5,11 @@ import {
   ChevronDownIcon,
 } from '@heroicons/react/outline';
 import Track from '../../../Track';
-import { MIX_LIMIT, TAGS } from '../../../../constants';
+import { MIX_LIMIT, TAGS, VOLUME } from '../../../../constants';
 import { useDispatch } from 'react-redux';
 import { addMixAsync } from '../../../../store/redux/slices/mixes';
 
-function AddMix({ sounds, toggleSoundFile, userId }) {
+function AddMix({ changeSoundVolume, sounds, toggleSoundFile, userId }) {
   const inputArrowRef = useRef(null);
   const dispatch = useDispatch();
   const [selectedSounds, setSelectedSounds] = useState(new Set());
@@ -59,14 +59,21 @@ function AddMix({ sounds, toggleSoundFile, userId }) {
         setToSounds({});
       };
 
+      const mixVolumes = {};
+      Object.keys(toSounds).forEach(
+        (soundId) => (mixVolumes[soundId] = VOLUME.default)
+      );
       const mix = {
         authorId: userId,
         title: mixTitle,
         soundIDs: Object.keys(toSounds),
         timestamp: Date.now(),
         tags: Array.from(mixTags),
+        mixVolumes,
+        volume: VOLUME.default,
         votes: 1,
       };
+
       dispatch(addMixAsync({ userId, mix, onSuccess }));
 
       if (inputArrowRef) {

@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import * as Tone from 'tone';
-import { PauseIcon, PlayIcon } from '@heroicons/react/solid';
-import { NOISE_COLOR } from '../../../constants';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { selectNoises } from '../../../store/redux/slices/noises';
+import Noise from '../../Noise';
 
 const noiseBgColorClassNames = {
   brown: 'bg-light-brown',
@@ -19,8 +17,11 @@ const noiseDescriptions = {
     'Similar to pink noise but with evenmore reduced higher frequencies. It sounds similar to river or strong wind.',
 };
 
-function NoiseGenerator({ toggleNoise }) {
-  const noiseStates = useSelector(selectNoises);
+function NoiseGenerator({ changeNoiseVolume, toggleNoise }) {
+  const noises = useSelector(selectNoises);
+  const noiseArray = Object.keys(noises).map(
+    (noiseColor) => noises[noiseColor]
+  );
 
   return (
     <div className='m-5'>
@@ -29,37 +30,15 @@ function NoiseGenerator({ toggleNoise }) {
         <span className='font-bold italic'>colors</span> of noise and each
         impart a different feel.
       </label>
-      {Object.keys(noiseStates).map((noiseColor) => (
-        <div key={noiseColor} className='flex  justify-center shadow-md mb-5'>
-          <div
-            className={`${noiseBgColorClassNames[noiseColor]} flex-1 flex flex-col justify-center items-stretch rounded-tl rounded-bl p-1`}
-          >
-            <div className='relative flex-1 flex justify-center items-center text-sm uppercase font-bold text-center'>
-              {noiseColor} noise
-              <div className='hidden absolute top-5 border-b w-32 md:flex justify-center'></div>
-            </div>
-            <div className='hidden md:flex md:justify-center md:items-center p-2'>
-              {noiseDescriptions[noiseColor]}
-            </div>
-          </div>
-          <div
-            className={`${noiseBgColorClassNames[noiseColor]} rounded-tr rounded-br flex justify-center items-center`}
-          >
-            {noiseStates[noiseColor].state === 'started' ? (
-              <PauseIcon
-                className={`cursor-pointer w-12 h-12 text-gray-600`}
-                aria-hidden='true'
-                onClick={() => toggleNoise(noiseColor)}
-              />
-            ) : (
-              <PlayIcon
-                className={`cursor-pointer w-12 h-12 text-gray-600`}
-                aria-hidden='true'
-                onClick={() => toggleNoise(noiseColor)}
-              />
-            )}
-          </div>
-        </div>
+      {noiseArray.map((noise) => (
+        <Noise
+          key={noise.color}
+          changeNoiseVolume={changeNoiseVolume}
+          description={noiseDescriptions[noise.color]}
+          noise={noise}
+          noiseClassName={noiseBgColorClassNames[noise.color]}
+          toggleNoise={toggleNoise}
+        />
       ))}
     </div>
   );

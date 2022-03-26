@@ -2,13 +2,13 @@ import React from 'react';
 import Mix from '../../../Mix';
 
 function MixList({
+  changeSoundVolume,
   mixes,
   sounds,
   toggleMix,
   toggleSoundFile,
   userId,
   usernames,
-  userVotes,
 }) {
   const mixesArray = Object.keys(mixes)
     .map((key) => mixes[key])
@@ -19,13 +19,13 @@ function MixList({
       {mixesArray.map((mix) => (
         <Mix
           key={mix.id}
+          changeSoundVolume={changeSoundVolume}
           mix={mix}
           sounds={sounds}
           toggleMix={toggleMix}
           toggleSoundFile={toggleSoundFile}
           userId={userId}
           usernames={usernames}
-          userVotes={userVotes}
         />
       ))}
     </div>

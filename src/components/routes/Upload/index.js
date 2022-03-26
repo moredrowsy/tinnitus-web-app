@@ -6,13 +6,12 @@ import { addDoc, collection } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { audioTrim } from '../../../utils';
 import { addSound } from '../../../store/redux/slices/sounds';
-import { updateUserVoteAsync } from '../../../store/redux/slices/userVotes';
 import { blobToDataURL } from '../../../utils';
 
 import { ArrowCircleUpIcon } from '@heroicons/react/outline';
 import { CheckCircleIcon } from '@heroicons/react/solid';
 import { updateUserSoundsAsync } from '../../../store/redux/slices/user';
-import { TAGS } from '../../../constants';
+import { TAGS, VOLUME } from '../../../constants';
 
 function Upload({ addPlayer, user }) {
   const dispatch = useDispatch();
@@ -91,7 +90,7 @@ function Upload({ addPlayer, user }) {
 
         // Add to player storage locally
         const dataURL = await blobToDataURL(file.data);
-        addPlayer({ storageKey: storagePath, dataURL });
+        addPlayer({ storageKey: storagePath, dataURL, volume: VOLUME.default });
 
         // add sounds to firebase database;
         const sound = {
@@ -107,12 +106,18 @@ function Upload({ addPlayer, user }) {
         sound.id = docRef.id;
         dispatch(addSound({ sound }));
 
-        // update user's sound array to firebase database
-        dispatch(updateUserSoundsAsync({ soundIDs: [docRef.id] }));
+        const userSound = {
+          vote: 1,
+          volume: VOLUME.default,
+        };
 
-        const voteInfo = { count: 1 };
+        // update user's sound array to firebase database
         dispatch(
-          updateUserVoteAsync({ userId: user.uid, postId: docRef.id, voteInfo })
+          updateUserSoundsAsync({
+            userId: user.uid,
+            soundId: docRef.id,
+            userSound,
+          })
         );
 
         // update file on client to 'uploaded' status

@@ -7,7 +7,6 @@ import { default as sounds } from './slices/sounds';
 import { default as soundFiles } from './slices/soundFiles';
 import { default as user } from './slices/user';
 import { default as usernames } from './slices/usernames';
-import { default as userVotes } from './slices/userVotes';
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +18,5 @@ export const store = configureStore({
     soundFiles,
     user,
     usernames,
-    userVotes,
   },
 });

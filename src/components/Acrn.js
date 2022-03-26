@@ -29,20 +29,20 @@ function Acrn({
     }
   });
 
-  let acrnState = 'stopped';
+  let acrnStatus = 'stopped';
   switch (type) {
     case ACRN.type.tone:
       if (acrns.hasOwnProperty(type)) {
-        acrnState = acrns[type].state;
+        acrnStatus = acrns[type].status;
       }
       break;
     case ACRN.type.sequence:
       if (acrns.hasOwnProperty(type)) {
-        acrnState = acrns[type].state;
+        acrnStatus = acrns[type].status;
       }
       break;
     default:
-      acrnState = 'stopped';
+      acrnStatus = 'stopped';
   }
 
   const onFreqChange = (newFreqValue) => {
@@ -50,9 +50,9 @@ function Acrn({
     setFrequency(newFreqValue);
   };
 
-  const onVolChange = (newVoValue) => {
-    acrnVolChange(newVoValue);
-    setVolume(newVoValue);
+  const onVolChange = (newVolValue) => {
+    acrnVolChange(newVolValue);
+    setVolume(newVolValue);
   };
 
   const onToggleAcrnPlay = () => {
@@ -65,9 +65,9 @@ function Acrn({
 
   let isDisabledBySequence = false;
   if (type === ACRN.type.sequence && acrns.hasOwnProperty(type)) {
-    const { state } = acrns[type];
+    const { status } = acrns[type];
 
-    if (state === 'started') {
+    if (status === 'started') {
       isDisabledBySequence = true;
     }
   }
@@ -112,10 +112,10 @@ function Acrn({
           </label>
           <input
             id='frequency'
-            className={`${sldierClasses} w-full h-2 appearance-none`}
+            className={`${sldierClasses} w-full h-2 rounded appearance-none`}
             type='range'
             min={FREQ.min}
-            step='1'
+            step={FREQ.step}
             max={FREQ.max}
             value={frequency}
             disabled={isDisabledBySequence}
@@ -130,10 +130,10 @@ function Acrn({
           </label>
           <input
             id='volume'
-            className={`${sldierClasses} w-full h-2 appearance-none`}
+            className={`${sldierClasses} w-full h-2 rounded appearance-none`}
             type='range'
             min={VOLUME.min}
-            step='0.1'
+            step={VOLUME.step}
             max={VOLUME.max}
             value={volume}
             disabled={isDisabledBySequence}
@@ -148,7 +148,7 @@ function Acrn({
             playClassName={'h-10 w-10 text-blue-400'}
             pauseClassName={'h-10 w-10 text-orange-400'}
             downloadingClassName={'w-10 h-10 text-gray-800'}
-            status={acrnState}
+            status={acrnStatus}
             toggleFn={onToggleAcrnPlay}
           />
         </div>

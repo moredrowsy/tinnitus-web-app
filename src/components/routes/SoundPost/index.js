@@ -8,16 +8,17 @@ import {
 
 import Sound from '../../Sound';
 import Post from '../Post';
+import { selectSounds } from '../../../store/redux/slices/sounds';
 
 function SoundPost({
+  changeSoundVolume,
   path,
-  sounds,
   toggleSoundFile,
   userId,
   usernames,
-  userVotes,
 }) {
   const { collectionId } = useParams();
+  const sounds = useSelector(selectSounds);
   const postCollections = useSelector(selectPostCollections);
   const posts = postCollections[collectionId];
   const sound = sounds[collectionId];
@@ -30,11 +31,11 @@ function SoundPost({
   return (
     <div className='m-5'>
       <Sound
+        changeSoundVolume={changeSoundVolume}
         sound={sound}
         toggleSoundFile={toggleSoundFile}
         userId={userId}
         usernames={usernames}
-        userVotes={userVotes}
       />
       <Post path={path} posts={posts} userId={userId} usernames={usernames} />
     </div>

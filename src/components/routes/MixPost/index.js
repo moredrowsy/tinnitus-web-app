@@ -8,18 +8,20 @@ import {
 
 import Mix from '../../Mix';
 import Post from '../Post';
+import { selectSounds } from '../../../store/redux/slices/sounds';
+import { selectMixes } from '../../../store/redux/slices/mixes';
 
 function MixPost({
-  mixes,
+  changeSoundVolume,
   path,
-  sounds,
   toggleMix,
   toggleSoundFile,
   userId,
   usernames,
-  userVotes,
 }) {
   const { collectionId } = useParams();
+  const sounds = useSelector(selectSounds);
+  const mixes = useSelector(selectMixes);
   const postCollections = useSelector(selectPostCollections);
   const posts = postCollections[collectionId];
   const mix = mixes[collectionId];
@@ -32,13 +34,13 @@ function MixPost({
   return (
     <div className='m-5'>
       <Mix
+        changeSoundVolume={changeSoundVolume}
         mix={mix}
         sounds={sounds}
         toggleMix={toggleMix}
         toggleSoundFile={toggleSoundFile}
         userId={userId}
         usernames={usernames}
-        userVotes={userVotes}
       />
       <Post path={path} posts={posts} userId={userId} usernames={usernames} />
     </div>

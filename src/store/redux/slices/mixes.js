@@ -1,8 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { db } from '../../firebase';
-import { addDoc, collection, getDocs } from 'firebase/firestore';
-import { updateUserMixesAsync } from './user';
-import { updateUserVoteAsync } from './userVotes';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  updateDoc,
+  increment,
+} from 'firebase/firestore';
+import { updateUserMixesAsync, updateUserMixVoteAsync } from './user';
 
 const sliceKey = 'mixes';
 const initialState = {};
@@ -17,6 +23,14 @@ export const mixesSlice = createSlice({
       const { mix } = action.payload;
       const { id } = mix;
       state[id] = mix;
+      return state;
+    },
+    updateMix: (state, action) => {
+      const { id, mix } = action.payload;
+      state[id] = {
+        ...state[id],
+        ...mix,
+      };
       return state;
     },
     updateMixes: (state, action) => {
@@ -54,6 +68,7 @@ export const {
   addMix,
   decrementMixVote,
   incrementMixVote,
+  updateMix,
   updateMixes,
   updateMixStatus,
 } = mixesSlice.actions;
@@ -71,7 +86,7 @@ export const fetchMixesAsync = () => async (dispatch, getState) => {
   const temp = {};
   querySnapshot.docs.forEach((doc) => {
     const data = doc.data();
-    const { authorId, soundIDs, tags, title, timestamp, votes } = data;
+    const { authorId, soundIDs, tags, title, timestamp, volume, votes } = data;
     const mix = {
       id: doc.id,
       authorId,
@@ -79,6 +94,7 @@ export const fetchMixesAsync = () => async (dispatch, getState) => {
       tags,
       title,
       timestamp,
+      volume,
       votes,
       status: 'none',
     };
@@ -94,10 +110,77 @@ export const addMixAsync =
       const docRef = await addDoc(collection(db, 'mixes'), mix);
       mix.id = docRef.id;
       dispatch(addMix({ mix }));
-      dispatch(updateUserMixesAsync({ mixIDs: [docRef.id] }));
 
-      const voteInfo = { count: 1 };
-      dispatch(updateUserVoteAsync({ userId, postId: docRef.id, voteInfo }));
+      const userMix = {
+        vote: 1,
+        volume: mix.volume,
+        mixVolumes: { ...mix.mixVolumes },
+      };
+      dispatch(updateUserMixesAsync({ userId, mixId: docRef.id, userMix }));
+
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      if (onError) onError(err);
+      console.log({ err });
+    }
+  };
+
+export const incrementMixVoteAsync =
+  ({ id, onSuccess, onError }) =>
+  async (dispatch, getState) => {
+    try {
+      const soundRef = doc(db, 'mixes', id);
+      updateDoc(soundRef, {
+        votes: increment(1),
+      });
+      dispatch(incrementMixVote({ id }));
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      if (onError) onError(err);
+      console.log({ err });
+    }
+  };
+
+export const decrementMixVoteAsync =
+  ({ id, onSuccess, onError }) =>
+  async (dispatch, getState) => {
+    try {
+      const soundRef = doc(db, 'mixes', id);
+      updateDoc(soundRef, {
+        votes: increment(-1),
+      });
+      dispatch(decrementMixVote({ id }));
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      if (onError) onError(err);
+      console.log({ err });
+    }
+  };
+
+export const decrementVoteAynsc =
+  ({ userId, mixId, onSuccess, onError }) =>
+  async (dispatch, getState) => {
+    try {
+      if (userId && mixId) {
+        dispatch(updateUserMixVoteAsync({ userId, mixId, vote: -1 }));
+        dispatch(decrementMixVoteAsync({ id: mixId }));
+      }
+
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      if (onError) onError(err);
+      console.log({ err });
+    }
+  };
+
+export const incrementVoteAynsc =
+  ({ userId, mixId, onSuccess, onError }) =>
+  async (dispatch, getState) => {
+    try {
+      if (userId && mixId) {
+        dispatch(updateUserMixVoteAsync({ userId, mixId, vote: 1 }));
+        dispatch(incrementMixVoteAsync({ id: mixId }));
+      }
 
       if (onSuccess) onSuccess();
     } catch (err) {

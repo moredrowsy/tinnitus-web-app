@@ -5,10 +5,9 @@ import {
   doc,
   getDocs,
   increment,
-  setDoc,
   updateDoc,
 } from 'firebase/firestore';
-import { updateUserVote } from './userVotes';
+import { updateUserSoundVoteAsync } from './user';
 
 const sliceKey = 'sounds';
 const initialState = {};
@@ -25,15 +24,32 @@ export const soundsSlice = createSlice({
       state[id] = sound;
       return state;
     },
+    updateSound: (state, action) => {
+      const { id, sound } = action.payload;
+      state[id] = {
+        ...state[id],
+        ...sound,
+      };
+      return state;
+    },
     updateSounds: (state, action) => {
       state = { ...state, ...action.payload };
       return state;
     },
+
     updateSoundStatus: (state, action) => {
       const { id, status } = action.payload;
       state[id] = {
         ...state[id],
         status,
+      };
+      return state;
+    },
+    updateSoundVolume: (state, action) => {
+      const { id, volume } = action.payload;
+      state[id] = {
+        ...state[id],
+        volume,
       };
       return state;
     },
@@ -60,8 +76,10 @@ export const {
   addSound,
   decrementSoundVote,
   incrementSoundVote,
+  updateSound,
   updateSounds,
   updateSoundStatus,
+  updateSoundVolume,
 } = soundsSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
@@ -78,8 +96,16 @@ export const fetchSoundsAsync = () => async (dispatch, getState) => {
   const temp = {};
   querySnapshot.docs.forEach((doc) => {
     const data = doc.data();
-    const { authorId, filename, storagePath, tags, title, timestamp, votes } =
-      data;
+    const {
+      authorId,
+      filename,
+      storagePath,
+      tags,
+      title,
+      timestamp,
+      votes,
+      volume,
+    } = data;
     const sound = {
       id: doc.id,
       authorId,
@@ -88,6 +114,7 @@ export const fetchSoundsAsync = () => async (dispatch, getState) => {
       tags,
       title,
       timestamp,
+      volume,
       votes,
       status: 'none',
     };
@@ -129,33 +156,13 @@ export const decrementSoundVoteAsync =
     }
   };
 
-export const addVoteAsync =
-  ({ userId, postId, onSuccess, onError }) =>
-  async (dispatch, getState) => {
-    try {
-      if (userId && postId) {
-        const postRef = doc(db, 'users', userId, 'votes', postId);
-        setDoc(postRef, { count: 1 });
-        dispatch(updateUserVote({ postId, voteInfo: { count: 1 } }));
-        dispatch(incrementSoundVoteAsync({ id: postId }));
-      }
-
-      if (onSuccess) onSuccess();
-    } catch (err) {
-      if (onError) onError(err);
-      console.log({ err });
-    }
-  };
-
 export const decrementVoteAynsc =
-  ({ userId, postId, onSuccess, onError }) =>
+  ({ userId, soundId, onSuccess, onError }) =>
   async (dispatch, getState) => {
     try {
-      if (userId && postId) {
-        const postRef = doc(db, 'users', userId, 'votes', postId);
-        setDoc(postRef, { count: -1 });
-        dispatch(updateUserVote({ postId, voteInfo: { count: -1 } }));
-        dispatch(decrementSoundVoteAsync({ id: postId }));
+      if (userId && soundId) {
+        dispatch(updateUserSoundVoteAsync({ userId, soundId, vote: -1 }));
+        dispatch(decrementSoundVoteAsync({ id: soundId }));
       }
 
       if (onSuccess) onSuccess();
@@ -166,14 +173,12 @@ export const decrementVoteAynsc =
   };
 
 export const incrementVoteAynsc =
-  ({ userId, postId, onSuccess, onError }) =>
+  ({ userId, soundId, onSuccess, onError }) =>
   async (dispatch, getState) => {
     try {
-      if (userId && postId) {
-        const postRef = doc(db, 'users', userId, 'votes', postId);
-        setDoc(postRef, { count: 1 });
-        dispatch(updateUserVote({ postId, voteInfo: { count: 1 } }));
-        dispatch(incrementSoundVoteAsync({ id: postId }));
+      if (userId && soundId) {
+        dispatch(updateUserSoundVoteAsync({ userId, soundId, vote: 1 }));
+        dispatch(incrementSoundVoteAsync({ id: soundId }));
       }
 
       if (onSuccess) onSuccess();

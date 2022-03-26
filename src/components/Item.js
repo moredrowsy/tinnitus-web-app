@@ -15,7 +15,7 @@ function Item({
   toggleFn,
   userId,
   usernames,
-  userVotes,
+  userVote,
 }) {
   const dispatch = useDispatch();
 
@@ -28,23 +28,17 @@ function Item({
     dispatch(getUsernameByIdAsync({ id: item.authorId }));
   }
 
-  // Check for vote status
-  let voteCount = 0;
-  if (item.id in userVotes) {
-    voteCount = Number(userVotes[item.id].count);
-  }
-
   return (
     <div className='flex justify-center items-stretch mb-5 bg-white shadow-md rounded'>
       <div className='flex-initial min-w-10 flex flex-col justify-center items-center bg-gray-200 rounded-tl rounded-bl'>
         <div className='flex justify-center mx-3'>
           <ChevronUpIcon
             className={`h-6 w-6 ${
-              voteCount > 0 ? 'text-red-400' : 'text-gray-400'
-            } ${userId && voteCount <= 0 ? 'cursor-pointer' : ''}`}
+              userVote > 0 ? 'text-red-400' : 'text-gray-400'
+            } ${userId && userVote <= 0 ? 'cursor-pointer' : ''}`}
             aria-hidden='true'
             onClick={
-              voteCount > 0 || userId === undefined || userId === null
+              userVote > 0 || userId === undefined || userId === null
                 ? null
                 : incrementVote
             }
@@ -54,11 +48,11 @@ function Item({
         <div className='flex justify-center mx-3'>
           <ChevronDownIcon
             className={`h-6 w-6 ${
-              voteCount < 0 ? 'text-red-400' : 'text-gray-400'
-            } ${userId && voteCount >= 0 ? 'cursor-pointer' : ''}`}
+              userVote < 0 ? 'text-red-400' : 'text-gray-400'
+            } ${userId && userVote >= 0 ? 'cursor-pointer' : ''}`}
             aria-hidden='true'
             onClick={
-              voteCount < 0 || userId === undefined || userId === null
+              userVote < 0 || userId === undefined || userId === null
                 ? null
                 : decrementVote
             }

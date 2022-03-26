@@ -1,23 +1,29 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   decrementVoteAynsc,
   incrementVoteAynsc,
-} from '../store/redux/slices/sounds';
+} from '../store/redux/slices/mixes';
 
 import Track from './Track';
 import Item from './Item';
 
 function Mix({
+  changeSoundVolume,
   mix,
   sounds,
   toggleMix,
   toggleSoundFile,
   userId,
   usernames,
-  userVotes,
 }) {
   const dispatch = useDispatch();
+  const userVote = useSelector((state) => {
+    if (mix && state.user && state.user.mixes.hasOwnProperty(mix.id)) {
+      return state.user.mixes[mix.id].vote;
+    }
+    return 0;
+  });
 
   if (!mix) return null;
 
@@ -28,11 +34,11 @@ function Mix({
   };
 
   const incrementVote = () => {
-    dispatch(incrementVoteAynsc({ userId, postId: mix.id }));
+    dispatch(incrementVoteAynsc({ userId, mixId: mix.id }));
   };
 
   const decrementVote = () => {
-    dispatch(decrementVoteAynsc({ userId, postId: mix.id }));
+    dispatch(decrementVoteAynsc({ userId, mixId: mix.id }));
   };
 
   return (
@@ -44,12 +50,18 @@ function Mix({
       toggleFn={toggleMixSounds}
       userId={userId}
       usernames={usernames}
-      userVotes={userVotes}
+      userVote={userVote}
     >
       <div className='border-t'>
         {soundsArray.map((sound) => (
           <div className='border-b' key={sound.id}>
-            <Track sound={sound} toggleSoundFile={toggleSoundFile} />
+            <Track
+              mixId={mix.id}
+              changeSoundVolume={changeSoundVolume}
+              sound={sound}
+              toggleSoundFile={toggleSoundFile}
+              userId={userId}
+            />
           </div>
         ))}
       </div>

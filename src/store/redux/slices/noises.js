@@ -10,21 +10,29 @@ export const noisesSlice = createSlice({
   reducers: {
     // Use the PayloadAction type to declare the contents of `action.payload`
     setNoise: (state, action) => {
-      const { color, noise } = action.payload;
-      state[color] = noise;
+      const { noise } = action.payload;
+      state[noise.color] = noise;
+      return state;
+    },
+    updateNoiseVolume: (state, action) => {
+      const { color, volume } = action.payload;
+      state[color] = {
+        ...state[color],
+        volume,
+      };
       return state;
     },
     setNoises: (state, action) => {
       const noises = action.payload;
-      for (const { color, noise } of noises) {
-        state[color] = noise;
+      for (const { noise } of noises) {
+        state[noise.color] = noise;
       }
       return state;
     },
   },
 });
 
-export const { setNoise, setNoises } = noisesSlice.actions;
+export const { setNoise, setNoises, updateNoiseVolume } = noisesSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
