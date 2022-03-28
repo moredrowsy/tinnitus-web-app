@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { VOLUME } from '../constants';
-import { updateUserMixTrackVolumeAsync } from '../store/redux/slices/user';
+
+// React Web
 import PlayButton from './PlayButton';
 
-function Track({
-  changeSoundVolume,
-  isSelcted,
-  mixId,
-  sound,
-  toggleSelected,
-  toggleSoundFile,
-  userId,
-}) {
+// Redux
+import { useDispatch, useSelector } from 'react-redux';
+import { changeMixSoundVolume, toggleSoundFile } from '../store/cache';
+import { VOLUME } from '../constants';
+
+function Track({ isSelcted, mixId, sound, toggleSelected, userId }) {
   const trackVolume = useSelector((state) => {
     if (
       sound &&
@@ -37,19 +33,14 @@ function Track({
 
   const onVolChange = (newVolValue) => {
     setVolume(newVolValue);
-    changeSoundVolume({
-      id: sound.id,
+    changeMixSoundVolume({
+      dispatch,
+      mixId,
+      soundId: sound.id,
       storageKey: sound.storagePath,
+      userId,
       volume: newVolValue,
     });
-    dispatch(
-      updateUserMixTrackVolumeAsync({
-        userId,
-        mixId,
-        soundId: sound.id,
-        volume: newVolValue,
-      })
-    );
   };
 
   return (
@@ -74,6 +65,7 @@ function Track({
             status={sound.status}
             toggleFn={() =>
               toggleSoundFile({
+                dispatch,
                 id: sound.id,
                 storageKey: sound.storagePath,
                 volume,

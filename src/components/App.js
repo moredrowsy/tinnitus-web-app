@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { soundCache } from '../store/cache';
 
@@ -28,32 +28,15 @@ import { auth } from '../store/firebase';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  fetchSoundsAsync,
-  updateSoundStatus,
-  updateSoundVolume,
-  updateSound,
-} from '../store/redux/slices/sounds';
-import {
-  getSoundFileAsync,
-  getSoundFilesAsync,
-} from '../store/redux/slices/soundFiles';
+import { fetchSoundsAsync } from '../store/redux/slices/sounds';
+import {} from '../store/redux/slices/soundFiles';
 import {
   fetchUsernamesAsync,
   selectUsernames,
 } from '../store/redux/slices/usernames';
 import { fetchUserAsync } from '../store/redux/slices/user';
-import {
-  fetchMixesAsync,
-  selectMixes,
-  updateMix,
-  updateMixStatus,
-} from '../store/redux/slices/mixes';
-import {
-  setNoise,
-  setNoises,
-  updateNoiseVolume,
-} from '../store/redux/slices/noises';
+import { fetchMixesAsync, selectMixes } from '../store/redux/slices/mixes';
+import { setNoises } from '../store/redux/slices/noises';
 import { setAcrn } from '../store/redux/slices/acrns';
 
 // Constants, utils, etc
@@ -79,7 +62,6 @@ function App() {
   const dispatch = useDispatch();
   const mixes = useSelector(selectMixes);
   const usernames = useSelector(selectUsernames);
-  const userMixes = useSelector((state) => state.user.mixes);
 
   // Add noise color players
   useEffect(() => {
@@ -106,7 +88,7 @@ function App() {
     if (noiseInfos.length > 0) {
       dispatch(setNoises(noiseInfos));
     }
-  }, [dispatch, soundCache]);
+  }, [dispatch]);
 
   // Add ACRN tone player
   useEffect(() => {
@@ -119,7 +101,7 @@ function App() {
       soundCache[ACRN.type.tone] = { player };
       dispatch(setAcrn({ type: ACRN.type.tone, acrn: { status: 'stopped' } }));
     }
-  }, [dispatch, soundCache]);
+  }, [dispatch]);
 
   // Fetch and update user information
   // Only fetch when user object is different
@@ -148,151 +130,6 @@ function App() {
 
     await player.load(dataURL);
     soundCache[storageKey] = { player };
-  };
-
-  const togglePlayer = (id, storageKey, volume) => {
-    if (soundCache.hasOwnProperty(storageKey)) {
-      const { player } = soundCache[storageKey];
-      player.volume.value = volume;
-
-      if (player.state === 'started') {
-        player.stop();
-        dispatch(updateSoundStatus({ id, status: 'stopped' }));
-      } else {
-        player.start();
-        dispatch(updateSoundStatus({ id, status: 'started' }));
-      }
-    }
-  };
-
-  const stopPlayer = (id, storageKey) => {
-    if (soundCache.hasOwnProperty(storageKey)) {
-      const { player } = soundCache[storageKey];
-
-      player.stop();
-      dispatch(updateSoundStatus({ id, status: 'stopped' }));
-    }
-  };
-
-  const changeSoundVolume = ({ id, storageKey, volume }) => {
-    if (soundCache.hasOwnProperty(storageKey)) {
-      const { player } = soundCache[storageKey];
-
-      player.volume.value = volume;
-    }
-
-    dispatch(updateSoundVolume({ id, volume }));
-  };
-
-  const changeNoiseVolume = ({ color, volume }) => {
-    if (soundCache.hasOwnProperty(color)) {
-      const { player } = soundCache[color];
-
-      player.volume.value = volume;
-      dispatch(updateNoiseVolume({ color, volume }));
-    }
-  };
-
-  const toggleSoundFile = async ({ id, storageKey, volume }) => {
-    // Check if there is a sound player in storage
-    if (storageKey in soundCache) {
-      togglePlayer(id, storageKey, volume);
-    }
-    // No sound player, need to dl and load file to new player
-    else {
-      const onSuccess = async (dataURL) => {
-        const player = new Tone.Player().toDestination();
-        player.loop = true;
-        player.volume.value = volume;
-
-        await player.load(dataURL);
-        soundCache[storageKey] = { player };
-
-        player.start();
-        dispatch(
-          updateSound({
-            id,
-            sound: { status: 'started', volume: VOLUME.default },
-          })
-        );
-      };
-      dispatch(getSoundFileAsync({ id, storageKey, onSuccess }));
-    }
-  };
-
-  const toggleMix = ({ mixId, soundList }) => {
-    if (mixes[mixId].status === 'started') {
-      for (const sound of soundList) {
-        const { id, storagePath: storageKey } = sound;
-
-        stopPlayer(id, storageKey);
-      }
-      dispatch(updateMixStatus({ id: mixId, status: 'stopped' }));
-    } else {
-      dispatch(updateMixStatus({ id: mixId, status: 'downloading' }));
-
-      const onSuccess = async (datas) => {
-        // Build temporary player storage
-        for (const data of datas) {
-          const { storageKey, dataURL } = data;
-
-          // Create player
-          const player = new Tone.Player().toDestination();
-          player.loop = true;
-
-          await player.load(dataURL);
-          soundCache[storageKey] = { player };
-        }
-
-        // started player files
-        for (const sound of soundList) {
-          const { id, storagePath: storageKey } = sound;
-
-          let mixVolumes = {};
-          // Check if there is mixVolumes for each track by user
-          if (userMixes.hasOwnProperty(mixId)) {
-            mixVolumes = userMixes[mixId].mixVolumes;
-          }
-
-          if (soundCache.hasOwnProperty(storageKey)) {
-            const { player } = soundCache[storageKey];
-
-            // Adjust sound volume from user's mixVolumes
-            if (mixVolumes.hasOwnProperty(sound.id)) {
-              const volume = mixVolumes[sound.id];
-              player.volume.value = volume;
-            }
-
-            player.start();
-            dispatch(
-              updateSound({
-                id,
-                sound: { status: 'started', volume: VOLUME.default },
-              })
-            );
-          }
-        }
-
-        dispatch(
-          updateMix({
-            id: mixId,
-            mix: { status: 'started', volume: VOLUME.default },
-          })
-        );
-      };
-      dispatch(getSoundFilesAsync({ sounds: soundList, onSuccess }));
-    }
-  };
-
-  const toggleNoise = ({ color, volume }) => {
-    const { player } = soundCache[color];
-    if (player.state === 'started') {
-      player.stop();
-    } else {
-      player.volume.value = volume;
-      player.start();
-    }
-    dispatch(setNoise({ noise: { color, status: player.state } }));
   };
 
   const acrnFreqChange = (newFreqValue) => {
@@ -433,7 +270,6 @@ function App() {
                   acrnFreqChange={acrnFreqChange}
                   acrnVolChange={acrnVolChange}
                   onGenAcrnSequence={onGenAcrnSequence}
-                  soundCache={soundCache}
                   toggleSequence={toggleSequence}
                   toggleTone={toggleTone}
                 />
@@ -443,10 +279,7 @@ function App() {
               path='/mixes'
               element={
                 <Mixes
-                  changeSoundVolume={changeSoundVolume}
                   mixes={mixes}
-                  toggleMix={toggleMix}
-                  toggleSoundFile={toggleSoundFile}
                   userId={user ? user.uid : null}
                   usernames={usernames}
                 />
@@ -456,10 +289,7 @@ function App() {
               path='/mixes/:collectionId'
               element={
                 <MixPost
-                  changeSoundVolume={changeSoundVolume}
                   path='mixes'
-                  toggleMix={toggleMix}
-                  toggleSoundFile={toggleSoundFile}
                   userId={user ? user.uid : null}
                   usernames={usernames}
                 />
@@ -467,13 +297,7 @@ function App() {
             />
             <Route
               path='/noise-gen'
-              element={
-                <NoiseGenerator
-                  changeNoiseVolume={changeNoiseVolume}
-                  toggleNoise={toggleNoise}
-                  userId={user ? user.uid : null}
-                />
-              }
+              element={<NoiseGenerator userId={user ? user.uid : null} />}
             />
             <Route path='/profile' element={<Profile user={user} />} />
             <Route path='/signin' element={<SignIn />} />
@@ -481,21 +305,14 @@ function App() {
             <Route
               path='/sounds'
               element={
-                <Sounds
-                  changeSoundVolume={changeSoundVolume}
-                  toggleSoundFile={toggleSoundFile}
-                  userId={user ? user.uid : null}
-                  usernames={usernames}
-                />
+                <Sounds userId={user ? user.uid : null} usernames={usernames} />
               }
             />
             <Route
               path='/sounds/:collectionId'
               element={
                 <SoundPost
-                  changeSoundVolume={changeSoundVolume}
                   path='sounds'
-                  toggleSoundFile={toggleSoundFile}
                   userId={user ? user.uid : null}
                   usernames={usernames}
                 />

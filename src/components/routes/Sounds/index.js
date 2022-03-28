@@ -7,7 +7,7 @@ import Sound from '../../Sound';
 import { useSelector } from 'react-redux';
 import { selectSounds } from '../../../store/redux/slices/sounds';
 
-function Sounds({ changeSoundVolume, toggleSoundFile, userId, usernames }) {
+function Sounds({ userId, usernames }) {
   const sounds = useSelector(selectSounds);
   const soundsArray = Object.keys(sounds)
     .map((key) => sounds[key])
@@ -18,9 +18,7 @@ function Sounds({ changeSoundVolume, toggleSoundFile, userId, usernames }) {
       {soundsArray.map((sound) => (
         <Sound
           key={sound.id}
-          changeSoundVolume={changeSoundVolume}
           sound={sound}
-          toggleSoundFile={toggleSoundFile}
           userId={userId}
           usernames={usernames}
         />

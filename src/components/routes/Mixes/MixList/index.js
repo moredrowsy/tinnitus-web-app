@@ -1,15 +1,13 @@
 import React from 'react';
+
+// React Web
 import Mix from '../../../Mix';
 
-function MixList({
-  changeSoundVolume,
-  mixes,
-  sounds,
-  toggleMix,
-  toggleSoundFile,
-  userId,
-  usernames,
-}) {
+// Redux
+import { useSelector } from 'react-redux';
+
+function MixList({ mixes, sounds, userId, usernames }) {
+  const userMixes = useSelector((state) => state.user.mixes);
   const mixesArray = Object.keys(mixes)
     .map((key) => mixes[key])
     .sort((a, b) => b.timestamp - a.timestamp);
@@ -19,12 +17,10 @@ function MixList({
       {mixesArray.map((mix) => (
         <Mix
           key={mix.id}
-          changeSoundVolume={changeSoundVolume}
           mix={mix}
           sounds={sounds}
-          toggleMix={toggleMix}
-          toggleSoundFile={toggleSoundFile}
           userId={userId}
+          userMix={userMixes[mix.id]}
           usernames={usernames}
         />
       ))}

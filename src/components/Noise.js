@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
+
+// React Web
 import { PauseIcon, PlayIcon } from '@heroicons/react/solid';
-import { VOLUME } from '../constants';
+
+// Redux
 import { useDispatch, useSelector } from 'react-redux';
 import { updateNoiseVolumeAsync } from '../store/redux/slices/user';
 
-function Noise({
-  changeNoiseVolume,
-  description,
-  noise,
-  noiseClassName,
-  toggleNoise,
-  userId,
-}) {
+import { changeNoiseVolume, toggleNoise } from '../store/cache';
+import { VOLUME } from '../constants';
+
+function Noise({ description, noise, noiseClassName, userId }) {
   const dispatch = useDispatch();
   const userVolume = useSelector((state) => {
     if (noise && state.user && state.user.noises.hasOwnProperty(noise.color)) {
@@ -30,14 +29,24 @@ function Noise({
 
   const onVolChange = (newVolValue) => {
     setVolume(newVolValue);
-    changeNoiseVolume({ color: noise.color, volume });
+    changeNoiseVolume({
+      color: noise.color,
+      dispatch,
+      userId,
+      volume: newVolValue,
+    });
+
     dispatch(
       updateNoiseVolumeAsync({
-        userId,
         color: noise.color,
-        volume: newVolValue,
+        userId,
+        volume,
       })
     );
+  };
+
+  const onToggleNoise = ({ color, volume }) => {
+    toggleNoise({ color, dispatch, volume });
   };
 
   return (
@@ -71,13 +80,13 @@ function Noise({
           <PauseIcon
             className={`cursor-pointer w-12 h-12 text-gray-600`}
             aria-hidden='true'
-            onClick={() => toggleNoise({ color: noise.color, volume })}
+            onClick={() => onToggleNoise({ color: noise.color, volume })}
           />
         ) : (
           <PlayIcon
             className={`cursor-pointer w-12 h-12 text-gray-600`}
             aria-hidden='true'
-            onClick={() => toggleNoise({ color: noise.color, volume })}
+            onClick={() => onToggleNoise({ color: noise.color, volume })}
           />
         )}
       </div>

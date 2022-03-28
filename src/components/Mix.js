@@ -1,20 +1,25 @@
 import React from 'react';
+
+// React Web
+import Track from './Track';
+import Item from './Item';
+
+// Redux
 import { useDispatch, useSelector } from 'react-redux';
 import {
   decrementVoteAynsc,
   incrementVoteAynsc,
 } from '../store/redux/slices/mixes';
 
-import Track from './Track';
-import Item from './Item';
+import { toggleMix } from '../store/cache';
 
 function Mix({
   changeSoundVolume,
   mix,
   sounds,
-  toggleMix,
   toggleSoundFile,
   userId,
+  userMix,
   usernames,
 }) {
   const dispatch = useDispatch();
@@ -30,7 +35,7 @@ function Mix({
   const soundsArray = mix.soundIDs.map((soundId) => sounds[soundId]);
 
   const toggleMixSounds = () => {
-    toggleMix({ mixId: mix.id, soundList: soundsArray });
+    toggleMix({ dispatch, mix, soundList: soundsArray, userMix });
   };
 
   const incrementVote = () => {

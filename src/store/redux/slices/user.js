@@ -42,22 +42,30 @@ export const usernamesSlice = createSlice({
     },
     updateUserSoundVote: (state, action) => {
       const { soundId, vote } = action.payload;
-      state.sounds[soundId].vote = vote;
+      if (state.sounds.hasOwnProperty(soundId)) {
+        state.sounds[soundId].vote = vote;
+      }
       return state;
     },
     updateUserSoundVolume: (state, action) => {
       const { soundId, volume } = action.payload;
-      state.sounds[soundId].volume = volume;
+      if (state.sounds.hasOwnProperty(soundId)) {
+        state.sounds[soundId].volume = volume;
+      }
       return state;
     },
     updateUserMixVote: (state, action) => {
       const { mixId, vote } = action.payload;
-      state.mixes[mixId].vote = vote;
+      if (state.mixes.hasOwnProperty(mixId)) {
+        state.mixes[mixId].vote = vote;
+      }
       return state;
     },
     updateUserMixVolume: (state, action) => {
       const { mixId, soundId, volume } = action.payload;
-      state.mixes[mixId].mixVolumes[soundId] = volume;
+      if (state.mixes.hasOwnProperty(mixId)) {
+        state.mixes[mixId].mixVolumes[soundId] = volume;
+      }
       return state;
     },
     updateUserNoiseVolume: (state, action) => {
@@ -217,7 +225,6 @@ const updateSoundVolumeAsyncDebounce = debounce(
     try {
       const postRef = doc(db, 'users', userId, 'sounds', soundId);
       updateDoc(postRef, { volume });
-      dispatch(updateUserSoundVolume({ soundId, volume }));
     } catch (e) {
       console.log(e);
     }
@@ -246,7 +253,6 @@ const updateMixVolumeAsyncDebounce = debounce(
       mixVolumes[soundId] = volume;
       const postRef = doc(db, 'users', userId, 'mixes', mixId);
       updateDoc(postRef, { mixVolumes });
-      dispatch(updateUserMixVolume({ mixId, soundId, volume }));
     } catch (e) {
       console.log(e);
     }

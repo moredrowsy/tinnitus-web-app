@@ -1,22 +1,19 @@
 import React, { useEffect } from 'react';
+
+// React Web
 import { useParams } from 'react-router-dom';
+import Sound from '../../Sound';
+import Post from '../Post';
+
+// Redux
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectPostCollections,
   fetchPostsByCollectionIdAsync,
 } from '../../../store/redux/slices/postCollections';
-
-import Sound from '../../Sound';
-import Post from '../Post';
 import { selectSounds } from '../../../store/redux/slices/sounds';
 
-function SoundPost({
-  changeSoundVolume,
-  path,
-  toggleSoundFile,
-  userId,
-  usernames,
-}) {
+function SoundPost({ path, userId, usernames }) {
   const { collectionId } = useParams();
   const sounds = useSelector(selectSounds);
   const postCollections = useSelector(selectPostCollections);
@@ -30,13 +27,7 @@ function SoundPost({
 
   return (
     <div className='m-5'>
-      <Sound
-        changeSoundVolume={changeSoundVolume}
-        sound={sound}
-        toggleSoundFile={toggleSoundFile}
-        userId={userId}
-        usernames={usernames}
-      />
+      <Sound sound={sound} userId={userId} usernames={usernames} />
       <Post path={path} posts={posts} userId={userId} usernames={usernames} />
     </div>
   );

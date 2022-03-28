@@ -1,15 +1,21 @@
 import React, { useRef, useState } from 'react';
+
+// React Web
 import {
   ArrowCircleRightIcon,
   ArrowCircleLeftIcon,
   ChevronDownIcon,
 } from '@heroicons/react/outline';
 import Track from '../../../Track';
-import { MIX_LIMIT, TAGS, VOLUME } from '../../../../constants';
+
+// Redux
 import { useDispatch } from 'react-redux';
 import { addMixAsync } from '../../../../store/redux/slices/mixes';
 
-function AddMix({ changeSoundVolume, sounds, toggleSoundFile, userId }) {
+import { MIX_LIMIT, TAGS, VOLUME } from '../../../../constants';
+import { toggleSoundFile } from '../../../../store/cache';
+
+function AddMix({ sounds, userId }) {
   const inputArrowRef = useRef(null);
   const dispatch = useDispatch();
   const [selectedSounds, setSelectedSounds] = useState(new Set());

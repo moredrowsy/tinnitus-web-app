@@ -1,29 +1,28 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 
-import { ACRN, FREQ, VOLUME } from '../constants';
-import { selectAcrns } from '../store/redux/slices/acrns';
+// React Web
 import PlayButton from './PlayButton';
 
-function Acrn({
-  acrnFreqChange,
-  acrnVolChange,
-  playerStorage,
-  toggleSequence,
-  toggleTone,
-}) {
+// Redux
+import { useSelector } from 'react-redux';
+import { selectAcrns } from '../store/redux/slices/acrns';
+
+import { ACRN, FREQ, VOLUME } from '../constants';
+import { soundCache } from '../store/cache';
+
+function Acrn({ acrnFreqChange, acrnVolChange, toggleSequence, toggleTone }) {
   const acrns = useSelector(selectAcrns);
   const [type, setType] = useState(ACRN.type.tone);
   const [frequency, setFrequency] = useState(() => {
-    if (playerStorage.hasOwnProperty(type)) {
-      return Math.round(playerStorage[type].player.frequency.value);
+    if (soundCache.hasOwnProperty(type)) {
+      return Math.round(soundCache[type].player.frequency.value);
     } else {
       return FREQ.default;
     }
   });
   const [volume, setVolume] = useState(() => {
-    if (playerStorage.hasOwnProperty(type)) {
-      return playerStorage[type].player.volume.value;
+    if (soundCache.hasOwnProperty(type)) {
+      return soundCache[type].player.volume.value;
     } else {
       return VOLUME.default;
     }

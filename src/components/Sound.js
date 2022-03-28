@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from 'react';
+
+// React Web
+import Item from './Item';
+
+// Redux
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { VOLUME } from '../constants';
 import {
   decrementVoteAynsc,
   incrementVoteAynsc,
 } from '../store/redux/slices/sounds';
-import { updateUserSoundVolumeAsync } from '../store/redux/slices/user';
 
-import Item from './Item';
+import { changeSoundVolume, toggleSoundFile } from '../store/cache';
+import { VOLUME } from '../constants';
 
-function Sound({
-  changeSoundVolume,
-  sound,
-  toggleSoundFile,
-  userId,
-  usernames,
-}) {
+function Sound({ sound, userId, usernames }) {
   const dispatch = useDispatch();
   const userSound = useSelector((state) => state.user.sounds[sound.id]);
   const userVote = useSelector((state) => {
@@ -30,6 +28,7 @@ function Sound({
     }
     return VOLUME.default;
   });
+
   const [volume, setVolume] = useState(userVolume);
 
   // Update default volume to user volume if it exists
@@ -50,8 +49,9 @@ function Sound({
     dispatch(decrementVoteAynsc({ userId, soundId: sound.id }));
   };
 
-  const toggleSound = () => {
+  const onToggleSound = () => {
     toggleSoundFile({
+      dispatch,
       id: sound.id,
       storageKey: sound.storagePath,
       volume,
@@ -62,18 +62,12 @@ function Sound({
     setVolume(newVolValue);
 
     changeSoundVolume({
-      id: sound.id,
+      dispatch,
+      soundId: sound.id,
       storageKey: sound.storagePath,
-      volume: newVolValue,
+      userId,
+      volume,
     });
-
-    dispatch(
-      updateUserSoundVolumeAsync({
-        userId,
-        soundId: sound.id,
-        volume: newVolValue,
-      })
-    );
   };
 
   return (
@@ -82,7 +76,7 @@ function Sound({
       decrementVote={decrementVote}
       incrementVote={incrementVote}
       item={sound}
-      toggleFn={toggleSound}
+      toggleFn={onToggleSound}
       userId={userId}
       usernames={usernames}
       userVote={userVote || 0}
