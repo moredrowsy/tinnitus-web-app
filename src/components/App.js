@@ -1,9 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+
+import { soundCache } from '../store/cache';
+
+// React Web
 import { Routes, Route } from 'react-router-dom';
+import * as Tone from 'tone';
+import './App.css';
+import {
+  AcrnPage,
+  Dashboard,
+  NoiseGenerator,
+  Mixes,
+  Profile,
+  SoundPost,
+  SignIn,
+  SignUp,
+  Sounds,
+  Upload,
+  MixPost,
+  NotFound,
+} from './routes';
+import Navbar from './Navbar';
+
+// Firebase
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../store/firebase';
 
+// Redux
+import { useSelector, useDispatch } from 'react-redux';
 import {
   fetchSoundsAsync,
   updateSoundStatus,
@@ -18,22 +42,6 @@ import {
   fetchUsernamesAsync,
   selectUsernames,
 } from '../store/redux/slices/usernames';
-
-import './App.css';
-import {
-  AcrnPage,
-  Dashboard,
-  NoiseGenerator,
-  Mixes,
-  SoundPost,
-  SignIn,
-  SignUp,
-  Sounds,
-  Upload,
-  MixPost,
-  NotFound,
-} from './routes';
-import Navbar from './Navbar';
 import { fetchUserAsync } from '../store/redux/slices/user';
 import {
   fetchMixesAsync,
@@ -41,17 +49,16 @@ import {
   updateMix,
   updateMixStatus,
 } from '../store/redux/slices/mixes';
-
-import * as Tone from 'tone';
-import { ACRN, FREQ, NOISE_COLOR, VOLUME } from '../constants';
 import {
   setNoise,
   setNoises,
   updateNoiseVolume,
 } from '../store/redux/slices/noises';
 import { setAcrn } from '../store/redux/slices/acrns';
+
+// Constants, utils, etc
+import { ACRN, FREQ, NOISE_COLOR, VOLUME } from '../constants';
 import { shuffleArray } from '../utils';
-import Profile from './routes/Profile';
 
 const navigation = [
   { name: 'Dashboard', path: '/', exact: true },
@@ -69,24 +76,21 @@ function App() {
     console.log(`Firebase authentication error: ${error}`);
   }
 
-  // Map of player storage: Each item is a json of { player }
-  const [playerStorage, setPlayerStorage] = useState({});
-
   const dispatch = useDispatch();
   const mixes = useSelector(selectMixes);
   const usernames = useSelector(selectUsernames);
+  const userMixes = useSelector((state) => state.user.mixes);
 
   // Add noise color players
   useEffect(() => {
     const noiseInfos = [];
-    const noiseMap = {};
 
     NOISE_COLOR.forEach((noiseColor) => {
-      if (!playerStorage.hasOwnProperty(noiseColor)) {
+      if (!soundCache.hasOwnProperty(noiseColor)) {
         const player = new Tone.Noise(noiseColor).toDestination();
         player.loop = true;
         player.volume.value = VOLUME.default;
-        noiseMap[noiseColor] = { player };
+        soundCache[noiseColor] = { player };
 
         const noise = {
           noise: {
@@ -102,25 +106,20 @@ function App() {
     if (noiseInfos.length > 0) {
       dispatch(setNoises(noiseInfos));
     }
-
-    if (Object.keys(noiseMap).length > 0) {
-      setPlayerStorage({ ...playerStorage, ...noiseMap });
-    }
-  }, [dispatch, playerStorage]);
+  }, [dispatch, soundCache]);
 
   // Add ACRN tone player
   useEffect(() => {
-    if (!playerStorage.hasOwnProperty(ACRN.type.tone)) {
+    if (!soundCache.hasOwnProperty(ACRN.type.tone)) {
       const player = new Tone.Oscillator({
         frequency: FREQ.default,
       }).toDestination();
       player.loop = true;
       player.volume.value = VOLUME.default;
-      playerStorage[ACRN.type.tone] = { player };
+      soundCache[ACRN.type.tone] = { player };
       dispatch(setAcrn({ type: ACRN.type.tone, acrn: { status: 'stopped' } }));
-      setPlayerStorage({ ...playerStorage });
     }
-  }, [dispatch, playerStorage]);
+  }, [dispatch, soundCache]);
 
   // Fetch and update user information
   // Only fetch when user object is different
@@ -138,8 +137,9 @@ function App() {
   }, [dispatch]);
 
   const addPlayer = async ({ storageKey, dataURL, volume }) => {
-    if (playerStorage.hasOwnProperty(storageKey)) {
-      playerStorage[storageKey].player.stop();
+    if (soundCache.hasOwnProperty(storageKey)) {
+      soundCache[storageKey].player.stop();
+      delete soundCache[storageKey];
     }
 
     const player = new Tone.Player().toDestination();
@@ -147,13 +147,12 @@ function App() {
     player.volume.value = volume;
 
     await player.load(dataURL);
-    playerStorage[storageKey] = { player };
-    setPlayerStorage({ ...playerStorage });
+    soundCache[storageKey] = { player };
   };
 
   const togglePlayer = (id, storageKey, volume) => {
-    if (playerStorage.hasOwnProperty(storageKey)) {
-      const { player } = playerStorage[storageKey];
+    if (soundCache.hasOwnProperty(storageKey)) {
+      const { player } = soundCache[storageKey];
       player.volume.value = volume;
 
       if (player.state === 'started') {
@@ -163,44 +162,40 @@ function App() {
         player.start();
         dispatch(updateSoundStatus({ id, status: 'started' }));
       }
-      setPlayerStorage({ ...playerStorage });
     }
   };
 
   const stopPlayer = (id, storageKey) => {
-    if (playerStorage.hasOwnProperty(storageKey)) {
-      const { player } = playerStorage[storageKey];
+    if (soundCache.hasOwnProperty(storageKey)) {
+      const { player } = soundCache[storageKey];
 
       player.stop();
       dispatch(updateSoundStatus({ id, status: 'stopped' }));
-      setPlayerStorage({ ...playerStorage });
     }
   };
 
   const changeSoundVolume = ({ id, storageKey, volume }) => {
-    if (playerStorage.hasOwnProperty(storageKey)) {
-      const { player } = playerStorage[storageKey];
+    if (soundCache.hasOwnProperty(storageKey)) {
+      const { player } = soundCache[storageKey];
 
       player.volume.value = volume;
-      setPlayerStorage({ ...playerStorage });
     }
 
     dispatch(updateSoundVolume({ id, volume }));
   };
 
   const changeNoiseVolume = ({ color, volume }) => {
-    if (playerStorage.hasOwnProperty(color)) {
-      const { player } = playerStorage[color];
+    if (soundCache.hasOwnProperty(color)) {
+      const { player } = soundCache[color];
 
       player.volume.value = volume;
-      setPlayerStorage({ ...playerStorage });
+      dispatch(updateNoiseVolume({ color, volume }));
     }
-    dispatch(updateNoiseVolume({ color, volume }));
   };
 
   const toggleSoundFile = async ({ id, storageKey, volume }) => {
     // Check if there is a sound player in storage
-    if (storageKey in playerStorage) {
+    if (storageKey in soundCache) {
       togglePlayer(id, storageKey, volume);
     }
     // No sound player, need to dl and load file to new player
@@ -211,10 +206,7 @@ function App() {
         player.volume.value = volume;
 
         await player.load(dataURL);
-        setPlayerStorage({
-          ...playerStorage,
-          [storageKey]: { player },
-        });
+        soundCache[storageKey] = { player };
 
         player.start();
         dispatch(
@@ -240,8 +232,6 @@ function App() {
       dispatch(updateMixStatus({ id: mixId, status: 'downloading' }));
 
       const onSuccess = async (datas) => {
-        const tempPlayerStorage = {};
-
         // Build temporary player storage
         for (const data of datas) {
           const { storageKey, dataURL } = data;
@@ -251,24 +241,28 @@ function App() {
           player.loop = true;
 
           await player.load(dataURL);
-          tempPlayerStorage[storageKey] = { player };
+          soundCache[storageKey] = { player };
         }
 
         // started player files
         for (const sound of soundList) {
           const { id, storagePath: storageKey } = sound;
 
-          if (playerStorage.hasOwnProperty(storageKey)) {
-            const { player } = playerStorage[storageKey];
-            player.start();
-            dispatch(
-              updateSound({
-                id,
-                sound: { status: 'started', volume: VOLUME.default },
-              })
-            );
-          } else if (tempPlayerStorage.hasOwnProperty(storageKey)) {
-            const { player } = tempPlayerStorage[storageKey];
+          let mixVolumes = {};
+          // Check if there is mixVolumes for each track by user
+          if (userMixes.hasOwnProperty(mixId)) {
+            mixVolumes = userMixes[mixId].mixVolumes;
+          }
+
+          if (soundCache.hasOwnProperty(storageKey)) {
+            const { player } = soundCache[storageKey];
+
+            // Adjust sound volume from user's mixVolumes
+            if (mixVolumes.hasOwnProperty(sound.id)) {
+              const volume = mixVolumes[sound.id];
+              player.volume.value = volume;
+            }
+
             player.start();
             dispatch(
               updateSound({
@@ -279,7 +273,6 @@ function App() {
           }
         }
 
-        setPlayerStorage({ ...playerStorage, ...tempPlayerStorage });
         dispatch(
           updateMix({
             id: mixId,
@@ -291,29 +284,28 @@ function App() {
     }
   };
 
-  const toggleNoise = (noiseColor) => {
-    const { player } = playerStorage[noiseColor];
+  const toggleNoise = ({ color, volume }) => {
+    const { player } = soundCache[color];
     if (player.state === 'started') {
       player.stop();
     } else {
+      player.volume.value = volume;
       player.start();
     }
-    dispatch(setNoise({ noise: { color: noiseColor, status: player.state } }));
+    dispatch(setNoise({ noise: { color, status: player.state } }));
   };
 
   const acrnFreqChange = (newFreqValue) => {
-    if (playerStorage.hasOwnProperty(ACRN.type.tone)) {
-      const { player } = playerStorage[ACRN.type.tone];
+    if (soundCache.hasOwnProperty(ACRN.type.tone)) {
+      const { player } = soundCache[ACRN.type.tone];
       player.frequency.value = newFreqValue;
-      setPlayerStorage({ ...playerStorage });
     }
   };
 
   const acrnVolChange = (newVolValue) => {
-    if (playerStorage.hasOwnProperty(ACRN.type.tone)) {
-      const { player } = playerStorage[ACRN.type.tone];
+    if (soundCache.hasOwnProperty(ACRN.type.tone)) {
+      const { player } = soundCache[ACRN.type.tone];
       player.volume.value = newVolValue;
-      setPlayerStorage({ ...playerStorage });
     }
   };
 
@@ -378,23 +370,22 @@ function App() {
     }, acrnEvents);
 
     // Check if seq is already playing; if so, stop it
-    if (playerStorage.hasOwnProperty(ACRN.type.sequence)) {
-      const { player: oldSeqPlayer } = playerStorage[ACRN.type.sequence];
+    if (soundCache.hasOwnProperty(ACRN.type.sequence)) {
+      const { player: oldSeqPlayer } = soundCache[ACRN.type.sequence];
       oldSeqPlayer.stop();
     }
 
     player.loop = true;
-    playerStorage[ACRN.type.sequence] = { player };
+    soundCache[ACRN.type.sequence] = { player };
     dispatch(
       setAcrn({ type: ACRN.type.sequence, acrn: { status: 'stopped' } })
     );
-    setPlayerStorage({ ...playerStorage });
     return player;
   };
 
   const toggleSequence = (freq, volume) => {
     if (Tone.Transport.state === 'started') {
-      const { player } = playerStorage[ACRN.type.sequence];
+      const { player } = soundCache[ACRN.type.sequence];
       player.stop();
       player.cancel();
       player.dispose();
@@ -419,7 +410,7 @@ function App() {
   };
 
   const toggleTone = () => {
-    const { player } = playerStorage[ACRN.type.tone];
+    const { player } = soundCache[ACRN.type.tone];
     if (player.state === 'started') {
       player.stop();
     } else {
@@ -442,7 +433,7 @@ function App() {
                   acrnFreqChange={acrnFreqChange}
                   acrnVolChange={acrnVolChange}
                   onGenAcrnSequence={onGenAcrnSequence}
-                  playerStorage={playerStorage}
+                  soundCache={soundCache}
                   toggleSequence={toggleSequence}
                   toggleTone={toggleTone}
                 />

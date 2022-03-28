@@ -71,13 +71,13 @@ function Noise({
           <PauseIcon
             className={`cursor-pointer w-12 h-12 text-gray-600`}
             aria-hidden='true'
-            onClick={() => toggleNoise(noise.color)}
+            onClick={() => toggleNoise({ color: noise.color, volume })}
           />
         ) : (
           <PlayIcon
             className={`cursor-pointer w-12 h-12 text-gray-600`}
             aria-hidden='true'
-            onClick={() => toggleNoise(noise.color)}
+            onClick={() => toggleNoise({ color: noise.color, volume })}
           />
         )}
       </div>

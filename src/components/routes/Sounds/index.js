@@ -1,7 +1,11 @@
 import React from 'react';
+
+// React Web
+import Sound from '../../Sound';
+
+// Redux
 import { useSelector } from 'react-redux';
 import { selectSounds } from '../../../store/redux/slices/sounds';
-import Sound from '../../Sound';
 
 function Sounds({ changeSoundVolume, toggleSoundFile, userId, usernames }) {
   const sounds = useSelector(selectSounds);

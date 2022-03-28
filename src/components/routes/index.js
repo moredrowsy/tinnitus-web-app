@@ -4,6 +4,7 @@ export { default as NoiseGenerator } from './NoiseGenerator';
 export { default as NotFound } from './NotFound';
 export { default as Mixes } from './Mixes';
 export { default as MixPost } from './MixPost';
+export { default as Profile } from './Profile';
 export { default as Post } from './Post';
 export { default as SoundPost } from './SoundPost';
 export { default as SignIn } from './SignIn';

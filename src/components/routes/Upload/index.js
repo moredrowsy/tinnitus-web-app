@@ -12,6 +12,7 @@ import { ArrowCircleUpIcon } from '@heroicons/react/outline';
 import { CheckCircleIcon } from '@heroicons/react/solid';
 import { updateUserSoundsAsync } from '../../../store/redux/slices/user';
 import { TAGS, VOLUME } from '../../../constants';
+import { addSoundFile } from '../../../store/redux/slices/soundFiles';
 
 function Upload({ addPlayer, user }) {
   const dispatch = useDispatch();
@@ -105,6 +106,8 @@ function Upload({ addPlayer, user }) {
         const docRef = await addDoc(collection(db, 'sounds'), sound);
         sound.id = docRef.id;
         dispatch(addSound({ sound }));
+        const storageKey = `sounds/${user.uid}/${file.name}`;
+        dispatch(addSoundFile({ storageKey }));
 
         const userSound = {
           vote: 1,

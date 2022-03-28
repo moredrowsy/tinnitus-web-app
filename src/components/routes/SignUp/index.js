@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import { auth, db } from '../../../store/firebase';
+// React Web
+import { useNavigate } from 'react-router-dom';
+import { LockClosedIcon } from '@heroicons/react/solid';
+
+// Firebase
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../../../store/firebase';
 
-import { LockClosedIcon } from '@heroicons/react/solid';
 import EarLogo from '../../../assets/images/ear-logo.svg';
 
 function SignUp() {

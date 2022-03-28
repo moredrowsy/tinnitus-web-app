@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth } from '../../../store/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 
+// React Web
+import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon } from '@heroicons/react/solid';
+
+// Firebase
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../../store/firebase';
+
 import EarLogo from '../../../assets/images/ear-logo.svg';
 
 function SignIn() {
