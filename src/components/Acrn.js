@@ -116,7 +116,7 @@ const Acrn = ({
           </label>
           <input
             id='frequency'
-            className={`${sldierClasses} w-full h-2 rounded appearance-none`}
+            className={`${sldierClasses} w-full h-1 md:h-2 rounded appearance-none`}
             type='range'
             min={FREQ.min}
             step={FREQ.step}
@@ -134,7 +134,7 @@ const Acrn = ({
           </label>
           <input
             id='volume'
-            className={`${sldierClasses} w-full h-2 rounded appearance-none`}
+            className={`${sldierClasses} w-full h-1 md:h-2 rounded appearance-none`}
             type='range'
             min={VOLUME.min}
             step={VOLUME.step}

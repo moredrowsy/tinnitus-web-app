@@ -82,7 +82,7 @@ const Sound = ({ sound, userId, usernames }) => {
       userVote={userVote || 0}
     >
       <input
-        className='appearance-none transition-opacity duration-300 opacity-50 hover:opacity-100 w-full h-2 bg-blue-100 accent-pink-500 rounded'
+        className='appearance-none transition-opacity duration-300 opacity-50 hover:opacity-100 w-full h-1 md:h2 bg-blue-400 md:bg-blue-100 accent-pink-500 rounded'
         type='range'
         min={VOLUME.min}
         step={VOLUME.step}

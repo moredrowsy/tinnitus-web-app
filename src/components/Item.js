@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/outline';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { getUsernameByIdAsync } from '../store/redux/slices/usernames';
 import { formatDate } from '../utils';
@@ -18,6 +18,7 @@ const Item = ({
   userVote,
 }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Exit if no item
   if (!item) return null;
@@ -27,6 +28,10 @@ const Item = ({
   if (username === undefined) {
     dispatch(getUsernameByIdAsync({ id: item.authorId }));
   }
+
+  const goToComment = () => {
+    navigate(commentLink);
+  };
 
   return (
     <div className='flex justify-center items-stretch mb-5 bg-white shadow-md rounded'>
@@ -60,7 +65,18 @@ const Item = ({
         </div>
       </div>
       <div className='flex-1 flex flex-col justify-center bg-gray-200 md:bg-white'>
-        <div className='text-center md:border-b p-1 font-bold'>
+        {/* Show when screen is size sm; otherwise hidden when size md or larger*/}
+        <div
+          className='md:hidden text-sm text-center p-1 font-bold cursor-pointer underline underline-offset-4'
+          onClick={goToComment}
+        >
+          {item.title}
+        </div>
+        <div className='flex-1 md:hidden text-[0.7em] p-1 text-center -mt-2'>
+          {username}
+        </div>
+        {/* Show when screen is size md or larger; otherwise hidden */}
+        <div className='hidden md:block md:text-md text-center md:border-b p-1 font-bold md:cursor-default'>
           {item.title}
         </div>
         <div className='hidden md:flex md:justify-center md:items-center'>
@@ -77,7 +93,7 @@ const Item = ({
             {formatDate(item.timestamp)}
           </div>
         </div>
-        <div className='hidden md:flex'>
+        <div className='flex'>
           <div className='flex-1 text-xs p-1 flex justify-center items-center'>
             <div className='flex-1'>{children}</div>
           </div>
