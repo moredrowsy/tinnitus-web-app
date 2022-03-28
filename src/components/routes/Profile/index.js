@@ -8,7 +8,7 @@ import {
 
 import { LockClosedIcon } from '@heroicons/react/solid';
 
-function Profile({ user }) {
+const Profile = ({ user }) => {
   const dispatch = useDispatch();
   const userProfile = useSelector(selectUser);
   const [displayName, setDisplayName] = useState(userProfile.displayName);
@@ -130,6 +130,6 @@ function Profile({ user }) {
       </div>
     </div>
   );
-}
+};
 
 export default Profile;

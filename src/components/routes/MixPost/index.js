@@ -14,7 +14,7 @@ import {
 import { selectSounds } from '../../../store/redux/slices/sounds';
 import { selectMixes } from '../../../store/redux/slices/mixes';
 
-function MixPost({ path, userId, usernames }) {
+const MixPost = ({ path, userId, usernames }) => {
   const { collectionId } = useParams();
   const sounds = useSelector(selectSounds);
   const mixes = useSelector(selectMixes);
@@ -33,6 +33,6 @@ function MixPost({ path, userId, usernames }) {
       <Post path={path} posts={posts} userId={userId} usernames={usernames} />
     </div>
   );
-}
+};
 
 export default MixPost;

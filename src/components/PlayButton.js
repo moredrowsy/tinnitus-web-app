@@ -5,14 +5,14 @@ import {
   PlayIcon,
 } from '@heroicons/react/outline';
 
-function PlayButton({
+const PlayButton = ({
   downloadingClassName,
   noneClassName,
   pauseClassName,
   playClassName,
   toggleFn,
   status,
-}) {
+}) => {
   // Logic for sound button
   let playButton;
   switch (status) {
@@ -54,6 +54,6 @@ function PlayButton({
   }
 
   return playButton;
-}
+};
 
 export default PlayButton;

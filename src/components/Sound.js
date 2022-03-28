@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Item from './Item';
 
 // Redux
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   decrementVoteAynsc,
   incrementVoteAynsc,
@@ -13,7 +13,7 @@ import {
 import { changeSoundVolume, toggleSoundFile } from '../store/cache';
 import { VOLUME } from '../constants';
 
-function Sound({ sound, userId, usernames }) {
+const Sound = ({ sound, userId, usernames }) => {
   const dispatch = useDispatch();
   const userSound = useSelector((state) => state.user.sounds[sound.id]);
   const userVote = useSelector((state) => {
@@ -92,10 +92,6 @@ function Sound({ sound, userId, usernames }) {
       />
     </Item>
   );
-}
+};
 
-const mapStateToProps = ({ sounds }, { sound }) => ({
-  soundVolume: sound ? sounds[sound.id] : null,
-});
-
-export default connect(mapStateToProps)(Sound);
+export default Sound;

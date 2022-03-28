@@ -13,7 +13,7 @@ import {
 
 import { toggleMix } from '../store/cache';
 
-function Mix({
+const Mix = ({
   changeSoundVolume,
   mix,
   sounds,
@@ -21,7 +21,7 @@ function Mix({
   userId,
   userMix,
   usernames,
-}) {
+}) => {
   const dispatch = useDispatch();
   const userVote = useSelector((state) => {
     if (mix && state.user && state.user.mixes.hasOwnProperty(mix.id)) {
@@ -72,6 +72,6 @@ function Mix({
       </div>
     </Item>
   );
-}
+};
 
 export default Mix;

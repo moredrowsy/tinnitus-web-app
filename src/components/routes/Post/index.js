@@ -7,7 +7,7 @@ import {
 } from '../../../store/redux/slices/postCollections';
 import { formatDate } from '../../../utils';
 
-function Post({ path, posts, userId, usernames }) {
+const Post = ({ path, posts, userId, usernames }) => {
   const [body, setBody] = useState('');
   const { collectionId } = useParams();
 
@@ -82,6 +82,6 @@ function Post({ path, posts, userId, usernames }) {
       </div>
     </div>
   );
-}
+};
 
 export default Post;

@@ -14,7 +14,7 @@ import { updateUserSoundsAsync } from '../../../store/redux/slices/user';
 import { TAGS, VOLUME } from '../../../constants';
 import { addSoundFile } from '../../../store/redux/slices/soundFiles';
 
-function Upload({ addPlayer, user }) {
+const Upload = ({ addPlayer, user }) => {
   const dispatch = useDispatch();
   const [files, setFiles] = useState({});
   const [loading, setLoading] = useState(false);
@@ -377,6 +377,6 @@ function Upload({ addPlayer, user }) {
       )}
     </div>
   );
-}
+};
 
 export default Upload;

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { changeMixSoundVolume, toggleSoundFile } from '../store/cache';
 import { VOLUME } from '../constants';
 
-function Track({ isSelcted, mixId, sound, toggleSelected, userId }) {
+const Track = ({ isSelcted, mixId, sound, toggleSelected, userId }) => {
   const trackVolume = useSelector((state) => {
     if (
       sound &&
@@ -87,6 +87,6 @@ function Track({ isSelcted, mixId, sound, toggleSelected, userId }) {
       </div>
     </div>
   );
-}
+};
 
 export default Track;

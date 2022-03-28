@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-function NavbarLink({ name, exact, path, className }) {
+const NavbarLink = ({ name, exact, path, className }) => {
   return (
     <NavLink
       key={name}
@@ -18,6 +18,6 @@ function NavbarLink({ name, exact, path, className }) {
       {name}
     </NavLink>
   );
-}
+};
 
 export default NavbarLink;

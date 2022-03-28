@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { selectMixes } from '../../../store/redux/slices/mixes';
 import { selectSounds } from '../../../store/redux/slices/sounds';
 
-function Mixes({ userId, usernames, userVotes }) {
+const Mixes = ({ userId, usernames, userVotes }) => {
   const sounds = useSelector(selectSounds);
   const mixes = useSelector(selectMixes);
 
@@ -25,6 +25,6 @@ function Mixes({ userId, usernames, userVotes }) {
       />
     </div>
   );
-}
+};
 
 export default Mixes;

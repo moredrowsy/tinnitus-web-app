@@ -7,7 +7,7 @@ import Sound from '../../Sound';
 import { useSelector } from 'react-redux';
 import { selectSounds } from '../../../store/redux/slices/sounds';
 
-function Sounds({ userId, usernames }) {
+const Sounds = ({ userId, usernames }) => {
   const sounds = useSelector(selectSounds);
   const soundsArray = Object.keys(sounds)
     .map((key) => sounds[key])
@@ -25,6 +25,6 @@ function Sounds({ userId, usernames }) {
       ))}
     </div>
   );
-}
+};
 
 export default Sounds;

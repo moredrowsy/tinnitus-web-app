@@ -52,7 +52,7 @@ const navigation = [
   { name: 'Upload', path: '/upload', exact: true },
 ];
 
-function App() {
+const App = () => {
   const [user, loading, error] = useAuthState(auth);
 
   if (error) {
@@ -328,6 +328,6 @@ function App() {
       </div>
     </>
   );
-}
+};
 
 export default App;

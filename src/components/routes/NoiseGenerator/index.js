@@ -17,7 +17,7 @@ const noiseDescriptions = {
     'Similar to pink noise but with evenmore reduced higher frequencies. It sounds similar to river or strong wind.',
 };
 
-function NoiseGenerator({ userId }) {
+const NoiseGenerator = ({ userId }) => {
   const noises = useSelector(selectNoises);
   const noiseArray = Object.keys(noises).map(
     (noiseColor) => noises[noiseColor]
@@ -41,6 +41,6 @@ function NoiseGenerator({ userId }) {
       ))}
     </div>
   );
-}
+};
 
 export default NoiseGenerator;

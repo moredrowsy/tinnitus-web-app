@@ -6,7 +6,7 @@ import { getUsernameByIdAsync } from '../store/redux/slices/usernames';
 import { formatDate } from '../utils';
 import PlayButton from './PlayButton';
 
-function Item({
+const Item = ({
   children,
   commentLink,
   decrementVote,
@@ -16,7 +16,7 @@ function Item({
   userId,
   usernames,
   userVote,
-}) {
+}) => {
   const dispatch = useDispatch();
 
   // Exit if no item
@@ -108,6 +108,6 @@ function Item({
       </div>
     </div>
   );
-}
+};
 
 export default Item;

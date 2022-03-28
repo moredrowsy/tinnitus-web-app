@@ -15,7 +15,7 @@ import { addMixAsync } from '../../../../store/redux/slices/mixes';
 import { MIX_LIMIT, TAGS, VOLUME } from '../../../../constants';
 import { toggleSoundFile } from '../../../../store/cache';
 
-function AddMix({ sounds, userId }) {
+const AddMix = ({ sounds, userId }) => {
   const inputArrowRef = useRef(null);
   const dispatch = useDispatch();
   const [selectedSounds, setSelectedSounds] = useState(new Set());
@@ -223,6 +223,6 @@ function AddMix({ sounds, userId }) {
       </div>
     </div>
   );
-}
+};
 
 export default AddMix;

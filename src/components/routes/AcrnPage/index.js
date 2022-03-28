@@ -1,14 +1,14 @@
 import React from 'react';
 import Acrn from '../../Acrn';
 
-function AcrnPage({
+const AcrnPage = ({
   acrnFreqChange,
   acrnVolChange,
   onGenAcrnSequence,
   playerStorage,
   toggleSequence,
   toggleTone,
-}) {
+}) => {
   return (
     <div className='m-5'>
       <div className='bloc text-md text-center text-gray-700'>
@@ -36,6 +36,6 @@ function AcrnPage({
       />
     </div>
   );
-}
+};
 
 export default AcrnPage;

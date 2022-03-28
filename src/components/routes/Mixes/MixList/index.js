@@ -6,7 +6,7 @@ import Mix from '../../../Mix';
 // Redux
 import { useSelector } from 'react-redux';
 
-function MixList({ mixes, sounds, userId, usernames }) {
+const MixList = ({ mixes, sounds, userId, usernames }) => {
   const userMixes = useSelector((state) => state.user.mixes);
   const mixesArray = Object.keys(mixes)
     .map((key) => mixes[key])
@@ -26,6 +26,6 @@ function MixList({ mixes, sounds, userId, usernames }) {
       ))}
     </div>
   );
-}
+};
 
 export default MixList;

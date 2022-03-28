@@ -13,7 +13,7 @@ import {
 } from '../../../store/redux/slices/postCollections';
 import { selectSounds } from '../../../store/redux/slices/sounds';
 
-function SoundPost({ path, userId, usernames }) {
+const SoundPost = ({ path, userId, usernames }) => {
   const { collectionId } = useParams();
   const sounds = useSelector(selectSounds);
   const postCollections = useSelector(selectPostCollections);
@@ -31,6 +31,6 @@ function SoundPost({ path, userId, usernames }) {
       <Post path={path} posts={posts} userId={userId} usernames={usernames} />
     </div>
   );
-}
+};
 
 export default SoundPost;

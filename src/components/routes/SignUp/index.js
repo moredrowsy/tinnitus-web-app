@@ -11,7 +11,7 @@ import { auth, db } from '../../../store/firebase';
 
 import EarLogo from '../../../assets/images/ear-logo.svg';
 
-function SignUp() {
+const SignUp = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -125,6 +125,6 @@ function SignUp() {
       </div>
     </div>
   );
-}
+};
 
 export default SignUp;

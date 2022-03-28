@@ -1,4 +1,13 @@
+// Web only
+import * as Tone from 'tone';
+
+// Redux
+import { updateMix, updateMixStatus } from '../redux/slices/mixes';
 import { setNoise, updateNoiseVolume } from '../redux/slices/noises';
+import {
+  getSoundFileAsync,
+  getSoundFilesAsync,
+} from '../redux/slices/soundFiles';
 import {
   updateSound,
   updateSoundStatus,
@@ -11,14 +20,7 @@ import {
   updateUserSoundVolumeAsync,
 } from '../redux/slices/user';
 
-// Web only
-import * as Tone from 'tone';
-import {
-  getSoundFileAsync,
-  getSoundFilesAsync,
-} from '../redux/slices/soundFiles';
 import { VOLUME } from '../../constants';
-import { updateMix, updateMixStatus } from '../redux/slices/mixes';
 
 export const soundCache = {};
 

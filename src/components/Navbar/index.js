@@ -14,7 +14,7 @@ export function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-function Navbar({ navigation, user }) {
+const Navbar = ({ navigation, user }) => {
   const avatar = null;
 
   const logOut = () => {
@@ -181,6 +181,6 @@ function Navbar({ navigation, user }) {
       )}
     </Disclosure>
   );
-}
+};
 
 export default Navbar;

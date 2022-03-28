@@ -10,7 +10,12 @@ import { selectAcrns } from '../store/redux/slices/acrns';
 import { ACRN, FREQ, VOLUME } from '../constants';
 import { soundCache } from '../store/cache';
 
-function Acrn({ acrnFreqChange, acrnVolChange, toggleSequence, toggleTone }) {
+const Acrn = ({
+  acrnFreqChange,
+  acrnVolChange,
+  toggleSequence,
+  toggleTone,
+}) => {
   const acrns = useSelector(selectAcrns);
   const [type, setType] = useState(ACRN.type.tone);
   const [frequency, setFrequency] = useState(() => {
@@ -154,6 +159,6 @@ function Acrn({ acrnFreqChange, acrnVolChange, toggleSequence, toggleTone }) {
       </div>
     </div>
   );
-}
+};
 
 export default Acrn;

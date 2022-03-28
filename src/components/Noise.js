@@ -10,7 +10,7 @@ import { updateNoiseVolumeAsync } from '../store/redux/slices/user';
 import { changeNoiseVolume, toggleNoise } from '../store/cache';
 import { VOLUME } from '../constants';
 
-function Noise({ description, noise, noiseClassName, userId }) {
+const Noise = ({ description, noise, noiseClassName, userId }) => {
   const dispatch = useDispatch();
   const userVolume = useSelector((state) => {
     if (noise && state.user && state.user.noises.hasOwnProperty(noise.color)) {
@@ -92,6 +92,6 @@ function Noise({ description, noise, noiseClassName, userId }) {
       </div>
     </div>
   );
-}
+};
 
 export default Noise;
