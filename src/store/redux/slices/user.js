@@ -10,7 +10,6 @@ import {
 import { db } from '../../firebase';
 import { debounce } from '../../../utils';
 import { DEBOUNCE_WAIT } from '../../../constants';
-import { updateSoundVolume } from './sounds';
 import { addUsername } from './usernames';
 
 const sliceKey = 'user';
@@ -224,7 +223,6 @@ export const updateUserMixVoteAsync =
 const updateSoundVolumeAsyncDebounce = debounce(
   ({ userId, soundId, volume, dispatch }) => {
     try {
-      dispatch(updateSoundVolume({ id: soundId, volume }));
       dispatch(updateUserSoundVolume({ soundId, volume }));
 
       const postRef = doc(db, 'users', userId, 'sounds', soundId);
@@ -254,7 +252,6 @@ export const updateUserSoundVolumeAsync =
 const updateMixVolumeAsyncDebounce = debounce(
   ({ userId, mixId, soundId, mixVolumes, volume, dispatch }) => {
     try {
-      dispatch(updateSoundVolume({ id: soundId, volume }));
       dispatch(updateUserMixVolume({ mixId, soundId, volume }));
 
       mixVolumes[soundId] = volume;
