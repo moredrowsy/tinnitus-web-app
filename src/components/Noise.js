@@ -5,7 +5,6 @@ import { PauseIcon, PlayIcon } from '@heroicons/react/solid';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
-import { updateNoiseVolumeAsync } from '../store/redux/slices/user';
 
 import { changeNoiseVolume, toggleNoise } from '../store/cache';
 import { VOLUME } from '../constants';
@@ -35,14 +34,6 @@ const Noise = ({ description, noise, noiseClassName, userId }) => {
       userId,
       volume: newVolValue,
     });
-
-    dispatch(
-      updateNoiseVolumeAsync({
-        color: noise.color,
-        userId,
-        volume,
-      })
-    );
   };
 
   const onToggleNoise = ({ color, volume }) => {

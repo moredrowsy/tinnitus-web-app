@@ -14,21 +14,40 @@ import {
   updateSoundVolume,
 } from '../redux/slices/sounds';
 import {
+  updateNoiseVolumeAsync,
   updateUserMixTrackVolumeAsync,
   updateUserSoundVolumeAsync,
 } from '../redux/slices/user';
 
-import { VOLUME } from '../../constants';
+import { DEBOUNCE_WAIT, VOLUME } from '../../constants';
+import { debounce } from '../../utils';
 
 export const soundCache = {};
+
+const changeNoiseVolumeDebounce = debounce(
+  ({ color, dispatch, userId, volume }) => {
+    try {
+      dispatch(updateNoiseVolume({ color, volume }));
+      dispatch(
+        updateNoiseVolumeAsync({
+          color,
+          userId,
+          volume,
+        })
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  DEBOUNCE_WAIT
+);
 
 export function changeNoiseVolume({ color, dispatch, userId, volume }) {
   if (soundCache.hasOwnProperty(color)) {
     const { player } = soundCache[color];
-
     player.volume.value = volume;
-    dispatch(updateNoiseVolume({ color, volume }));
   }
+  changeNoiseVolumeDebounce({ color, dispatch, userId, volume });
 }
 
 export function toggleNoise({ color, dispatch, volume }) {
@@ -84,6 +103,24 @@ export async function toggleSoundFile({ dispatch, id, storageKey, volume }) {
   }
 }
 
+const changeSoundVolumeDebounce = debounce(
+  ({ dispatch, soundId, userId, volume }) => {
+    try {
+      dispatch(updateSoundVolume({ id: soundId, volume }));
+      dispatch(
+        updateUserSoundVolumeAsync({
+          userId,
+          soundId,
+          volume,
+        })
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  DEBOUNCE_WAIT
+);
+
 export function changeSoundVolume({
   dispatch,
   soundId,
@@ -96,14 +133,7 @@ export function changeSoundVolume({
     player.volume.value = volume;
   }
 
-  dispatch(updateSoundVolume({ id: soundId, volume }));
-  dispatch(
-    updateUserSoundVolumeAsync({
-      userId,
-      soundId,
-      volume,
-    })
-  );
+  changeSoundVolumeDebounce({ dispatch, soundId, userId, volume });
 }
 
 const stopPlayer = ({ dispatch, id, storageKey }) => {
@@ -179,6 +209,25 @@ export function toggleMix({ dispatch, mix, soundList, userMix }) {
   }
 }
 
+const changeMixSoundVolumeDebounce = debounce(
+  ({ dispatch, mixId, soundId, userId, volume }) => {
+    try {
+      dispatch(updateSoundVolume({ id: soundId, volume }));
+      dispatch(
+        updateUserMixTrackVolumeAsync({
+          mixId,
+          soundId,
+          userId,
+          volume,
+        })
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  DEBOUNCE_WAIT
+);
+
 export function changeMixSoundVolume({
   dispatch,
   mixId,
@@ -192,13 +241,5 @@ export function changeMixSoundVolume({
     player.volume.value = volume;
   }
 
-  dispatch(updateSoundVolume({ id: soundId, volume }));
-  dispatch(
-    updateUserMixTrackVolumeAsync({
-      mixId,
-      soundId,
-      userId,
-      volume,
-    })
-  );
+  changeMixSoundVolumeDebounce({ dispatch, mixId, soundId, userId, volume });
 }

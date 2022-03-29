@@ -8,8 +8,6 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { debounce } from '../../../utils';
-import { DEBOUNCE_WAIT } from '../../../constants';
 import { addUsername } from './usernames';
 
 const sliceKey = 'user';
@@ -220,26 +218,15 @@ export const updateUserMixVoteAsync =
     }
   };
 
-const updateSoundVolumeAsyncDebounce = debounce(
-  ({ userId, soundId, volume, dispatch }) => {
-    try {
-      dispatch(updateUserSoundVolume({ soundId, volume }));
-
-      const postRef = doc(db, 'users', userId, 'sounds', soundId);
-      updateDoc(postRef, { volume });
-    } catch (e) {
-      console.log(e);
-    }
-  },
-  DEBOUNCE_WAIT
-);
-
 export const updateUserSoundVolumeAsync =
   ({ userId, soundId, volume, onSuccess, onError }) =>
   async (dispatch, getState) => {
     try {
       if (userId) {
-        updateSoundVolumeAsyncDebounce({ userId, soundId, volume, dispatch });
+        dispatch(updateUserSoundVolume({ soundId, volume }));
+
+        const postRef = doc(db, 'users', userId, 'sounds', soundId);
+        updateDoc(postRef, { volume });
       }
 
       if (onSuccess) onSuccess();
@@ -248,21 +235,6 @@ export const updateUserSoundVolumeAsync =
       console.log({ err });
     }
   };
-
-const updateMixVolumeAsyncDebounce = debounce(
-  ({ userId, mixId, soundId, mixVolumes, volume, dispatch }) => {
-    try {
-      dispatch(updateUserMixVolume({ mixId, soundId, volume }));
-
-      mixVolumes[soundId] = volume;
-      const postRef = doc(db, 'users', userId, 'mixes', mixId);
-      updateDoc(postRef, { mixVolumes });
-    } catch (e) {
-      console.log(e);
-    }
-  },
-  DEBOUNCE_WAIT
-);
 
 export const updateUserMixTrackVolumeAsync =
   ({ userId, mixId, soundId, volume, onSuccess, onError }) =>
@@ -270,14 +242,11 @@ export const updateUserMixTrackVolumeAsync =
     try {
       if (userId) {
         const mixVolumes = getState().user.mixes[mixId].mixVolumes;
-        updateMixVolumeAsyncDebounce({
-          userId,
-          mixId,
-          soundId,
-          mixVolumes: { ...mixVolumes },
-          volume,
-          dispatch,
-        });
+        dispatch(updateUserMixVolume({ mixId, soundId, volume }));
+
+        mixVolumes[soundId] = volume;
+        const postRef = doc(db, 'users', userId, 'mixes', mixId);
+        updateDoc(postRef, { mixVolumes });
       }
 
       if (onSuccess) onSuccess();
@@ -287,25 +256,14 @@ export const updateUserMixTrackVolumeAsync =
     }
   };
 
-const updateNoiseVolumeAsyncDebounce = debounce(
-  ({ userId, color, volume, dispatch }) => {
-    try {
-      const postRef = doc(db, 'users', userId, 'noises', color);
-      setDoc(postRef, { volume });
-      dispatch(updateUserNoiseVolume({ color, volume }));
-    } catch (e) {
-      console.log(e);
-    }
-  },
-  DEBOUNCE_WAIT
-);
-
 export const updateNoiseVolumeAsync =
   ({ userId, color, volume, onSuccess, onError }) =>
   async (dispatch, getState) => {
     try {
       if (userId) {
-        updateNoiseVolumeAsyncDebounce({ userId, color, volume, dispatch });
+        const postRef = doc(db, 'users', userId, 'noises', color);
+        setDoc(postRef, { volume });
+        dispatch(updateUserNoiseVolume({ color, volume }));
       }
 
       if (onSuccess) onSuccess();
