@@ -8,15 +8,9 @@ import {
   getSoundFileAsync,
   getSoundFilesAsync,
 } from '../redux/slices/soundFiles';
-import {
-  updateSound,
-  updateSoundStatus,
-  updateSoundVolume,
-} from '../redux/slices/sounds';
+import { updateSound, updateSoundStatus } from '../redux/slices/sounds';
 import {
   updateUserMixTrackVolumeAsync,
-  updateUserMixVolume,
-  updateUserSoundVolume,
   updateUserSoundVolumeAsync,
 } from '../redux/slices/user';
 
@@ -97,9 +91,6 @@ export function changeSoundVolume({
     const { player } = soundCache[storageKey];
     player.volume.value = volume;
   }
-
-  dispatch(updateSoundVolume({ id: soundId, volume }));
-  dispatch(updateUserSoundVolume({ soundId, volume }));
 
   dispatch(
     updateUserSoundVolumeAsync({
@@ -195,9 +186,6 @@ export function changeMixSoundVolume({
     const { player } = soundCache[storageKey];
     player.volume.value = volume;
   }
-
-  dispatch(updateSoundVolume({ id: soundId, volume }));
-  dispatch(updateUserMixVolume({ mixId, soundId, volume }));
 
   dispatch(
     updateUserMixTrackVolumeAsync({

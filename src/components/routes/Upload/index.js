@@ -1,18 +1,24 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+
+// React Web
+import { ArrowCircleUpIcon } from '@heroicons/react/outline';
+import { CheckCircleIcon } from '@heroicons/react/solid';
+import NeedAuthedUserMsg from '../../NeedAuthedUserMsg';
+import { audioTrim } from '../../../utils';
+import { blobToDataURL } from '../../../utils';
+
+// Redux
 import { useDispatch } from 'react-redux';
+import { addSound } from '../../../store/redux/slices/sounds';
+import { addSoundFile } from '../../../store/redux/slices/soundFiles';
+import { updateUserSoundsAsync } from '../../../store/redux/slices/user';
+
+// Firebase
 import { db } from '../../../store/firebase';
 import { addDoc, collection } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
-import { audioTrim } from '../../../utils';
-import { addSound } from '../../../store/redux/slices/sounds';
-import { blobToDataURL } from '../../../utils';
 
-import { ArrowCircleUpIcon } from '@heroicons/react/outline';
-import { CheckCircleIcon } from '@heroicons/react/solid';
-import { updateUserSoundsAsync } from '../../../store/redux/slices/user';
 import { TAGS, VOLUME } from '../../../constants';
-import { addSoundFile } from '../../../store/redux/slices/soundFiles';
 
 const Upload = ({ addPlayer, user }) => {
   const dispatch = useDispatch();
@@ -149,16 +155,7 @@ const Upload = ({ addPlayer, user }) => {
 
   if (!user) {
     return (
-      <div className='block m-5 text-md text-center font-medium text-gray-700'>
-        <Link className='underline' to='/signin'>
-          Login
-        </Link>{' '}
-        or{' '}
-        <Link className='underline' to='/signup'>
-          create
-        </Link>{' '}
-        an account to upload files
-      </div>
+      <NeedAuthedUserMsg authed={user ? true : false} msg='to upload sounds' />
     );
   }
 

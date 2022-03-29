@@ -15,7 +15,12 @@ import { VOLUME } from '../constants';
 
 const Sound = ({ sound, userId, usernames }) => {
   const dispatch = useDispatch();
-  const userSound = useSelector((state) => state.user.sounds[sound.id]);
+  const userSound = useSelector((state) => {
+    if (sound) {
+      return state.user.sounds[sound.id];
+    }
+    return {};
+  });
   const userVote = useSelector((state) => {
     if (sound && state.user && state.user.sounds.hasOwnProperty(sound.id)) {
       return state.user.sounds[sound.id].vote;
@@ -33,7 +38,7 @@ const Sound = ({ sound, userId, usernames }) => {
 
   // Update default volume to user volume if it exists
   useEffect(() => {
-    if (userSound && userSound.volume !== VOLUME.default) {
+    if (userSound && userSound.volume && userSound.volume !== VOLUME.default) {
       setVolume(userSound.volume);
     }
   }, [userSound]);
@@ -66,7 +71,7 @@ const Sound = ({ sound, userId, usernames }) => {
       soundId: sound.id,
       storageKey: sound.storagePath,
       userId,
-      volume,
+      volume: newVolValue,
     });
   };
 

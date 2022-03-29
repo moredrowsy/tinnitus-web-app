@@ -6,6 +6,7 @@ import {
   ArrowCircleLeftIcon,
   ChevronDownIcon,
 } from '@heroicons/react/outline';
+import NeedAuthedUserMsg from '../../../NeedAuthedUserMsg';
 import Track from '../../../Track';
 
 // Redux
@@ -99,6 +100,12 @@ const AddMix = ({ sounds, userId }) => {
 
     setMixTags(new Set(mixTags));
   };
+
+  if (!userId) {
+    return (
+      <NeedAuthedUserMsg authed={userId ? true : false} msg='to add mixes' />
+    );
+  }
 
   return (
     <div>

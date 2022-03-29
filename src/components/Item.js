@@ -94,18 +94,20 @@ const Item = ({
           </div>
         </div>
         <div className='flex'>
-          <div className='flex-1 text-xs p-1 flex justify-center items-center'>
+          <div className='flex-1 text-xs flex justify-center items-center'>
             <div className='flex-1'>{children}</div>
           </div>
         </div>
-        <div className='hidden md:flex md:p-1'>
+        <div className='md:m-1'>
           {item.tags &&
             item.tags.map((tag) => (
-              <span
-                key={tag}
-                className='inline-block text-xs bg-gray-200 rounded-full px-3 py-1 font-semibold text-gray-700 mr-1'
-              >
-                #{tag}
+              <span key={tag}>
+                <span className='inline-block md:hidden text-xs bg-gray-300 rounded-full px-1 font-semibold text-gray-700 mr-1'>
+                  #{tag}
+                </span>
+                <span className='hidden md:inline-block text-xs bg-gray-200 rounded-full px-3 py-1 font-semibold text-gray-700 mr-1'>
+                  #{tag}
+                </span>
               </span>
             ))}
         </div>
