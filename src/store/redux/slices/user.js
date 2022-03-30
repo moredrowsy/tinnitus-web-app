@@ -241,9 +241,9 @@ export const updateUserMixTrackVolumeAsync =
   async (dispatch, getState) => {
     try {
       if (userId) {
-        const mixVolumes = getState().user.mixes[mixId].mixVolumes;
         dispatch(updateUserMixVolume({ mixId, soundId, volume }));
 
+        const mixVolumes = { ...getState().user.mixes[mixId].mixVolumes };
         mixVolumes[soundId] = volume;
         const postRef = doc(db, 'users', userId, 'mixes', mixId);
         updateDoc(postRef, { mixVolumes });
