@@ -1,10 +1,15 @@
 import React from 'react';
-import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/outline';
+
+// React Web
 import { Link, useNavigate } from 'react-router-dom';
+import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/outline';
+import PlayButton from './PlayButton';
+
+// Redux
 import { useDispatch } from 'react-redux';
 import { getUsernameByIdAsync } from '../store/redux/slices/usernames';
+
 import { formatDate } from '../utils';
-import PlayButton from './PlayButton';
 
 const Item = ({
   children,
@@ -42,11 +47,7 @@ const Item = ({
               userVote > 0 ? 'text-red-400' : 'text-gray-400'
             } ${userId && userVote <= 0 ? 'cursor-pointer' : ''}`}
             aria-hidden='true'
-            onClick={
-              userVote > 0 || userId === undefined || userId === null
-                ? null
-                : incrementVote
-            }
+            onClick={!userId || userVote > 0 ? null : incrementVote}
           />
         </div>
         <div className='flex justify-center -mt-3 -mb-3'>{item.votes || 0}</div>
@@ -56,11 +57,7 @@ const Item = ({
               userVote < 0 ? 'text-red-400' : 'text-gray-400'
             } ${userId && userVote >= 0 ? 'cursor-pointer' : ''}`}
             aria-hidden='true'
-            onClick={
-              userVote < 0 || userId === undefined || userId === null
-                ? null
-                : decrementVote
-            }
+            onClick={!userId || userVote < 0 ? null : decrementVote}
           />
         </div>
       </div>
@@ -98,14 +95,14 @@ const Item = ({
             <div className='flex-1'>{children}</div>
           </div>
         </div>
-        <div className='md:m-1'>
+        <div className='md:m-1 flex flex-wrap'>
           {item.tags &&
             item.tags.map((tag) => (
               <span key={tag}>
-                <span className='inline-block md:hidden text-xs bg-gray-300 rounded-full px-1 font-semibold text-gray-700 mr-1'>
+                <span className='inline-block md:hidden text-xs bg-gray-300 rounded-full px-1 font-semibold text-gray-700 m-1'>
                   #{tag}
                 </span>
-                <span className='hidden md:inline-block text-xs bg-gray-200 rounded-full px-3 py-1 font-semibold text-gray-700 mr-1'>
+                <span className='hidden md:inline-block text-xs bg-gray-200 rounded-full px-3 py-1 font-semibold text-gray-700 m-1'>
                   #{tag}
                 </span>
               </span>

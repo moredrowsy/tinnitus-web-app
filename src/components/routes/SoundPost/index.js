@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 // React Web
 import { useParams } from 'react-router-dom';
 import Sound from '../../Sound';
-import Post from '../Post';
+import Post from '../../Post';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,7 +28,13 @@ const SoundPost = ({ path, userId, usernames }) => {
   return (
     <div className='m-5'>
       <Sound sound={sound} userId={userId} usernames={usernames} />
-      <Post path={path} posts={posts} userId={userId} usernames={usernames} />
+      <Post
+        collectionId={collectionId}
+        path={path}
+        posts={posts}
+        userId={userId}
+        usernames={usernames}
+      />
     </div>
   );
 };

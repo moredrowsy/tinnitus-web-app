@@ -52,7 +52,7 @@ const Track = ({ isSelcted, mixId, sound, toggleSelected, userId }) => {
       <div className='flex'>
         <div
           className='flex-1 text-sm overflow-hidden text-ellipsis p-1'
-          onClick={() => toggleSelected(sound.id)}
+          onClick={toggleSelected ? () => toggleSelected(sound.id) : null}
         >
           {sound.title}
         </div>

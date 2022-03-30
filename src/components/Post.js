@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+
+// Redux
 import { useDispatch } from 'react-redux';
 import {
   addPostAsync,
   fetchPostsByCollectionIdAsync,
-} from '../../../store/redux/slices/postCollections';
-import { formatDate } from '../../../utils';
+} from '../store/redux/slices/postCollections';
 
-const Post = ({ path, posts, userId, usernames }) => {
+import { formatDate } from '../utils';
+
+const Post = ({ collectionId, path, posts, userId, usernames }) => {
   const [body, setBody] = useState('');
-  const { collectionId } = useParams();
 
   const dispatch = useDispatch();
 

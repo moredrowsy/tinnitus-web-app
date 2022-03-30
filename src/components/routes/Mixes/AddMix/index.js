@@ -143,7 +143,7 @@ const AddMix = ({ sounds, userId }) => {
             <div className='flex flex-col lg:flex-row'>
               <div className='bg-white h-40 max-h-40 overflow-auto rounded-md shadow-md lg:flex-1'>
                 {fromSoundsKeys.map((soundId) => (
-                  <div className='border-b' key={soundId}>
+                  <div className='border-b p-1' key={soundId}>
                     <Track
                       isSelcted={selectedSounds.has(soundId)}
                       sound={sounds[soundId]}
@@ -171,13 +171,15 @@ const AddMix = ({ sounds, userId }) => {
               </div>
               <div className='relative bg-white h-40 max-h-40 overflow-auto rounded-md shadow-md lg:flex-1'>
                 {Object.keys(toSounds).map((soundId) => (
-                  <Track
-                    key={soundId}
-                    isSelcted={selectedSounds.has(soundId)}
-                    sound={sounds[soundId]}
-                    toggleSelected={toggleSelected}
-                    toggleSoundFile={toggleSoundFile}
-                  />
+                  <div className='border-b p-1' key={soundId}>
+                    <Track
+                      key={soundId}
+                      isSelcted={selectedSounds.has(soundId)}
+                      sound={sounds[soundId]}
+                      toggleSelected={toggleSelected}
+                      toggleSoundFile={toggleSoundFile}
+                    />
+                  </div>
                 ))}
                 {Object.keys(toSounds).length === 0 && (
                   <div className='absolute top-0 left-0 flex justify-center items-center w-full h-full'>
@@ -188,7 +190,7 @@ const AddMix = ({ sounds, userId }) => {
                 )}
               </div>
             </div>
-            <div className='flex mt-5 justify-center items-center'>
+            <div className='flex mt-5 justify-center items-center flex-wrap'>
               {TAGS.map((tag) => {
                 const hasTag = mixTags.has(tag);
                 let className =
@@ -205,7 +207,7 @@ const AddMix = ({ sounds, userId }) => {
                 return (
                   <div
                     key={tag}
-                    className={`text-center text-xs select-none mr-1 cursor-pointer ${className}`}
+                    className={`text-center text-xs select-none m-1 cursor-pointer ${className}`}
                     onClick={() => onToggleMixTag(tag)}
                   >
                     #{tag}

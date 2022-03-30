@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { selectMixes } from '../../../store/redux/slices/mixes';
 import { selectSounds } from '../../../store/redux/slices/sounds';
 
-const Mixes = ({ userId, usernames, userVotes }) => {
+const Mixes = ({ userId, usernames }) => {
   const sounds = useSelector(selectSounds);
   const mixes = useSelector(selectMixes);
 
@@ -21,7 +21,6 @@ const Mixes = ({ userId, usernames, userVotes }) => {
         sounds={sounds}
         userId={userId}
         usernames={usernames}
-        userVotes={userVotes}
       />
     </div>
   );

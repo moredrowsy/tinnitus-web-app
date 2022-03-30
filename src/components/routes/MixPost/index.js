@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 // React Web
 import { useParams } from 'react-router-dom';
 import Mix from '../../Mix';
-import Post from '../Post';
+import Post from '../../Post';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,7 +30,13 @@ const MixPost = ({ path, userId, usernames }) => {
   return (
     <div className='m-5'>
       <Mix mix={mix} sounds={sounds} userId={userId} usernames={usernames} />
-      <Post path={path} posts={posts} userId={userId} usernames={usernames} />
+      <Post
+        collectionId={collectionId}
+        path={path}
+        posts={posts}
+        userId={userId}
+        usernames={usernames}
+      />
     </div>
   );
 };
