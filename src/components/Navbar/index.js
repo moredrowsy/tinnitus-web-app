@@ -114,7 +114,7 @@ const Navbar = ({ navigation, user }) => {
                             </Link>
                           )}
                         </Menu.Item>
-                        <Menu.Item>
+                        {/* <Menu.Item>
                           {({ active }) => (
                             <Link
                               to='#'
@@ -126,7 +126,7 @@ const Navbar = ({ navigation, user }) => {
                               Settings
                             </Link>
                           )}
-                        </Menu.Item>
+                        </Menu.Item> */}
                         <Menu.Item>
                           {({ active }) => (
                             <Link

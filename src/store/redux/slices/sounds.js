@@ -91,6 +91,7 @@ export const selectSounds = (state) => state[sliceKey];
 // Here's an example of conditionally dispatching actions based on current state.
 export const fetchSoundsAsync = () => async (dispatch, getState) => {
   const querySnapshot = await getDocs(collection(db, 'sounds'));
+  const { sounds } = getState();
 
   // Serialize snapshot documents to json object for redux
   const temp = {};
@@ -106,6 +107,8 @@ export const fetchSoundsAsync = () => async (dispatch, getState) => {
       votes,
       volume,
     } = data;
+
+    const hasSoundInState = sounds.hasOwnProperty(doc.id);
     const sound = {
       id: doc.id,
       authorId,
@@ -116,7 +119,7 @@ export const fetchSoundsAsync = () => async (dispatch, getState) => {
       timestamp,
       volume,
       votes,
-      status: 'none',
+      status: hasSoundInState ? sounds[doc.id].status : 'none',
     };
     temp[doc.id] = sound;
   });

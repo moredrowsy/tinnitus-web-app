@@ -12,6 +12,7 @@ import { addUsername } from './usernames';
 
 const sliceKey = 'user';
 const initialState = {
+  uid: null,
   displayName: '',
   sounds: {},
   mixes: {},
@@ -277,44 +278,46 @@ export const fetchUserAsync =
   ({ userId }) =>
   async (dispatch, getState) => {
     try {
-      const userRef = doc(db, 'users', userId);
-      const userSnap = await getDoc(userRef);
-      const data = userSnap.data();
-      const { displayName } = data;
+      if (userId) {
+        const userRef = doc(db, 'users', userId);
+        const userSnap = await getDoc(userRef);
+        const data = userSnap.data();
+        const { displayName } = data;
 
-      const soundsRef = collection(db, 'users', userId, 'sounds');
-      const soundsSnapshot = await getDocs(soundsRef);
-      const sounds = {};
-      soundsSnapshot.forEach((q) => {
-        const data = q.data();
-        sounds[q.id] = data;
-      });
+        const soundsRef = collection(db, 'users', userId, 'sounds');
+        const soundsSnapshot = await getDocs(soundsRef);
+        const sounds = {};
+        soundsSnapshot.forEach((q) => {
+          const data = q.data();
+          sounds[q.id] = data;
+        });
 
-      const mixesRef = collection(db, 'users', userId, 'mixes');
-      const mixesSnapshot = await getDocs(mixesRef);
-      const mixes = {};
-      mixesSnapshot.forEach((q) => {
-        const data = q.data();
-        mixes[q.id] = data;
-      });
+        const mixesRef = collection(db, 'users', userId, 'mixes');
+        const mixesSnapshot = await getDocs(mixesRef);
+        const mixes = {};
+        mixesSnapshot.forEach((q) => {
+          const data = q.data();
+          mixes[q.id] = data;
+        });
 
-      const noisesRef = collection(db, 'users', userId, 'noises');
-      const noisesSnapshot = await getDocs(noisesRef);
-      const noises = {};
-      noisesSnapshot.forEach((q) => {
-        const data = q.data();
-        noises[q.id] = data;
-      });
+        const noisesRef = collection(db, 'users', userId, 'noises');
+        const noisesSnapshot = await getDocs(noisesRef);
+        const noises = {};
+        noisesSnapshot.forEach((q) => {
+          const data = q.data();
+          noises[q.id] = data;
+        });
 
-      const reduxUser = {
-        uid: userId,
-        displayName,
-        sounds,
-        mixes,
-        noises,
-      };
+        const reduxUser = {
+          uid: userId,
+          displayName,
+          sounds,
+          mixes,
+          noises,
+        };
 
-      dispatch(updateUser({ user: reduxUser }));
+        dispatch(updateUser({ user: reduxUser }));
+      }
     } catch (err) {}
   };
 

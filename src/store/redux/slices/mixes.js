@@ -82,11 +82,15 @@ export const selectMixes = (state) => state[sliceKey];
 // Here's an example of conditionally dispatching actions based on current state.
 export const fetchMixesAsync = () => async (dispatch, getState) => {
   const querySnapshot = await getDocs(collection(db, 'mixes'));
+  const { mixes } = getState();
+
   // Serialize snapshot documents to json object for redux
   const temp = {};
   querySnapshot.docs.forEach((doc) => {
     const data = doc.data();
     const { authorId, soundIDs, tags, title, timestamp, volume, votes } = data;
+
+    const hasMixInState = mixes.hasOwnProperty(doc.id);
     const mix = {
       id: doc.id,
       authorId,
@@ -96,7 +100,7 @@ export const fetchMixesAsync = () => async (dispatch, getState) => {
       timestamp,
       volume,
       votes,
-      status: 'none',
+      status: hasMixInState ? mixes[doc.id].status : 'none',
     };
     temp[doc.id] = mix;
   });
