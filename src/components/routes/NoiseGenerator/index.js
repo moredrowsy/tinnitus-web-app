@@ -1,7 +1,11 @@
 import React from 'react';
+
+// React Web
+import Noise from '../../Noise';
+
+// Redux
 import { useSelector } from 'react-redux';
 import { selectNoises } from '../../../store/redux/slices/noises';
-import Noise from '../../Noise';
 
 const noiseBgColorClassNames = {
   brown: 'bg-light-brown',

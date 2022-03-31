@@ -154,9 +154,7 @@ const Upload = ({ addPlayer, user }) => {
   };
 
   if (!user) {
-    return (
-      <NeedAuthedUserMsg authed={user ? true : false} msg='to upload sounds' />
-    );
+    return <NeedAuthedUserMsg msg='to upload sounds' />;
   }
 
   return (

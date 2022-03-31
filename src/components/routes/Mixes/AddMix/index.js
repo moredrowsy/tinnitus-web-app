@@ -102,9 +102,7 @@ const AddMix = ({ sounds, userId }) => {
   };
 
   if (!userId) {
-    return (
-      <NeedAuthedUserMsg authed={userId ? true : false} msg='to add mixes' />
-    );
+    return <NeedAuthedUserMsg msg='to add mixes' />;
   }
 
   return (

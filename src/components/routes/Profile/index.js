@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
+
+// React Web
+import { LockClosedIcon } from '@heroicons/react/solid';
+import NeedAuthedUserMsg from '../../NeedAuthedUserMsg';
+
+// Redux
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import {
   selectUser,
   updateUserDisplayNameAsync,
 } from '../../../store/redux/slices/user';
-
-import { LockClosedIcon } from '@heroicons/react/solid';
 
 const Profile = ({ user }) => {
   const dispatch = useDispatch();
@@ -38,18 +41,7 @@ const Profile = ({ user }) => {
   };
 
   if (!user) {
-    return (
-      <div className='block m-5 text-md text-center font-medium text-gray-700'>
-        <Link className='underline' to='/signin'>
-          Login
-        </Link>{' '}
-        or{' '}
-        <Link className='underline' to='/signup'>
-          create
-        </Link>{' '}
-        an account to upload files
-      </div>
-    );
+    return <NeedAuthedUserMsg msg='' />;
   }
 
   return (
