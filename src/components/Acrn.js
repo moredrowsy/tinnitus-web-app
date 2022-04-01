@@ -61,7 +61,7 @@ const Acrn = ({
 
   const onToggleAcrnPlay = () => {
     if (type === ACRN.type.tone) {
-      toggleTone();
+      toggleTone({ frequency });
     } else {
       toggleSequence(frequency, volume);
     }

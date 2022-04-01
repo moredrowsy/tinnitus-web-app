@@ -246,11 +246,12 @@ const App = () => {
     }
   };
 
-  const toggleTone = () => {
+  const toggleTone = ({ frequency }) => {
     const { player } = soundCache[ACRN.type.tone];
     if (player.state === 'started') {
       player.stop();
     } else {
+      player.frequency.value = frequency;
       player.start();
     }
     dispatch(setAcrn({ type: ACRN.type.tone, acrn: { status: player.state } }));
