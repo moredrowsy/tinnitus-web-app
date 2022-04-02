@@ -42,4 +42,25 @@ body {
 #app {
   overflow: auto;
   height: 100%;
+
+  /* Mozilla scrollbar */
+  scrollbar-face-color: rgb(176, 88, 54); /* Firefox 63 compatibility */
+  scrollbar-track-color: rgb(51, 62, 72); /* Firefox 63 compatibility */
+  scrollbar-color: #9ca3af #f1f5f9;
+  scrollbar-width: auto;
+}
+
+/* Chrome scrollbar */
+#app::-webkit-scrollbar {
+  width: 12px; /* width of the entire scrollbar */
+}
+
+#app::-webkit-scrollbar-track {
+  background: #f1f5f9; /* color of the tracking area */
+}
+
+#app::-webkit-scrollbar-thumb {
+  background-color: #9ca3af; /* color of the scroll thumb */
+  border-radius: 20px; /* roundness of the scroll thumb */
+  border: 2px solid #f1f5f9; /* creates padding around scroll thumb */
 }
