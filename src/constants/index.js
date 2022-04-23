@@ -37,3 +37,5 @@ export const ACRN = {
 };
 
 export const DEBOUNCE_WAIT = 500;
+
+export const MAX_FILE_SIZE_BYTES = 1000000;

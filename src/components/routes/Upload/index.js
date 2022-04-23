@@ -18,7 +18,7 @@ import { db } from '../../../store/firebase';
 import { addDoc, collection } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 
-import { TAGS, VOLUME } from '../../../constants';
+import { MAX_FILE_SIZE_BYTES, TAGS, VOLUME } from '../../../constants';
 
 const Upload = ({ addPlayer, user }) => {
   const dispatch = useDispatch();
@@ -56,7 +56,7 @@ const Upload = ({ addPlayer, user }) => {
         if (file.type === 'audio/mpeg') {
           setLoading(true);
 
-          if (file.size > 1000000) {
+          if (file.size > MAX_FILE_SIZE_BYTES) {
             const blob = await audioTrim(file, 0, 30);
             files[file.name] = {
               type: 'Blob',

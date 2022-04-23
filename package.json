@@ -1,5 +1,6 @@
 {
   "name": "tinnitus-web-app",
+  "homepage": "/tinnitus-relief",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

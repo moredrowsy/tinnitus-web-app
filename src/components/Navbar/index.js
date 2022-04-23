@@ -2,7 +2,7 @@
 import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
+import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import { UserIcon } from '@heroicons/react/solid';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../store/firebase';
