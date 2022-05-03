@@ -23,9 +23,9 @@ const AddMix = ({ sounds, userId }) => {
   const [mixTitle, setMixTitle] = useState('');
   const [mixTags, setMixTags] = useState(new Set());
   const [toSounds, setToSounds] = useState({});
-  const fromSoundsKeys = Object.keys(sounds).filter(
-    (key) => !toSounds.hasOwnProperty(key)
-  );
+  const fromSoundsKeys = Object.keys(sounds)
+    .sort((a, b) => sounds[a].title.localeCompare(sounds[b].title))
+    .filter((key) => !toSounds.hasOwnProperty(key));
 
   const toggleSelected = (soundId) => {
     if (selectedSounds.has(soundId)) selectedSounds.delete(soundId);
@@ -113,7 +113,7 @@ const AddMix = ({ sounds, userId }) => {
           type='checkbox'
           className='peer absolute top-0 inset-x-0 w-full h-10 opacity-0 z-10 cursor-pointer'
         />
-        <div className='bg-gray-700 h-10 w-full pl-3 flex items-center'>
+        <div className='bg-gray-700 h-10 w-full pl-3 flex items-center justify-center text-center'>
           <h1 className='text-md font-semibold text-white'>Add Mix</h1>
         </div>
         {/* arrow down */}
