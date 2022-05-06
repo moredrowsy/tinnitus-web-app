@@ -1,6 +1,6 @@
 /* This example requires Tailwind CSS v2.0+ */
 import React, { Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import { UserIcon } from '@heroicons/react/solid';
@@ -15,11 +15,13 @@ export function classNames(...classes) {
 }
 
 const Navbar = ({ navigation, user }) => {
+  const navigate = useNavigate();
   const avatar = null;
 
   const logOut = () => {
     signOut(auth);
-    window.location.pathname = '/signin';
+    navigate('/signin');
+    navigate(0);
   };
 
   return (
@@ -114,19 +116,6 @@ const Navbar = ({ navigation, user }) => {
                             </Link>
                           )}
                         </Menu.Item>
-                        {/* <Menu.Item>
-                          {({ active }) => (
-                            <Link
-                              to='#'
-                              className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm text-gray-700'
-                              )}
-                            >
-                              Settings
-                            </Link>
-                          )}
-                        </Menu.Item> */}
                         <Menu.Item>
                           {({ active }) => (
                             <Link
